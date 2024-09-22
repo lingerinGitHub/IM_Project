@@ -2,7 +2,9 @@ const time = require('../utils/time.js')//生成时间戳
 const { generateToken, verifyToken } = require('../utils/jwt_util.js')//生成token
 const fs = require('fs');
 const { redis0 } = require('../utils/redis_connect.js');
-const { B2BchatidGernerator } = require('../utils/chatidGenerator.js')//生成聊天id
+const { B2BchatidGernerator } = require('../utils/chatidGenerator.js');//生成聊天id
+const { disconnect, resourceUsage } = require('process');
+const { timeStamp } = require('console');
 
 
 //保存在线用户信息,数组对象，保存用户id-socketid
@@ -26,14 +28,19 @@ module.exports = function (io) {
         //保存用户id-socketid至onlineUserList
         if (verifyToken(socket.handshake.query.token)) {
             // 如果id已经存在，则停止这一次连接[socket.handshake.query.id]
+            console.log(socket.id)
+
             if (onlineUserList.get(socket.handshake.query.id.toString()) != undefined) {
                 console.log(`"${socket.handshake.query.id}"用户已连接ws服务器，重置上一次socket连接`)
+                // 登出事件
                 io.to(onlineUserList.get(socket.handshake.query.id.toString()).socketid).emit('logout', { status: 200, data: { message: '账号已在异地登录', timeStamp: time.getTimestamp() } });
+
             }
             // 保存本次新的连接至服务器
             onlineUserList.set(socket.handshake.query.id.toString(), {
                 socketid: socket.id,
-                timeStamp: Date.now()
+                timeStamp: Date.now(),
+                disconnect: false
             })
             //连接成功路由返回连接信息
             io.to(socket.id).emit('connected', { status: 200, data: { message: '登陆成功', timeStamp: time.getTimestamp(), socketid: onlineUserList.get(socket.handshake.query.id.toString()).socketid } });//首次链接返回时间戳
@@ -47,6 +54,14 @@ module.exports = function (io) {
 
         // B2B监听'message:to'事件
         socket.on('B2Bmessage:to', async (msg) => {
+            // 验证本次请求的用户是否在服务器中
+            if (!verifyAuthority(socket.handshake.query.id, io)) {
+                // 登出事件
+                io.to(onlineUserList.get(socket.handshake.query.id.toString()).socketid).emit('logout', { status: 500, data: { message: '非法访问', timeStamp: time.getTimestamp() } });
+                // 关闭连接
+                socket.disconnect(true);
+                return
+            }
 
             //本次聊天信息
             const chatInfo = {
@@ -55,7 +70,7 @@ module.exports = function (io) {
                 message: msg.message
             }
 
-            console.log('收到消息：', msg);
+            // console.log('收到消息：', msg);
             //发送消息202409131200,精确到秒
             dataStamp = time.getTimestamp();
 
@@ -63,7 +78,7 @@ module.exports = function (io) {
             console.log(chatInfo)
             const chatId = B2BchatidGernerator(socket.handshake.query.id, msg.to)
             const luaresult = await redis0.eval(B2BchatInsertLua, 2, chatId, time.getTimestamp(), Date.now(), JSON.stringify(chatInfo));
-            console.log(`redis保存结果：${luaresult}`)
+            // console.log(`redis保存结果：${luaresult}`)
 
             //检测用户是否在线
             if (onlineUserList.get(msg.to.toString()) === undefined) {
@@ -73,70 +88,59 @@ module.exports = function (io) {
             }
             //发送聊天记录到目标服务器
             io.to(onlineUserList.get(msg.to.toString()).socketid).emit('B2Bmessage:from', { id: msg.from, chatInfo: { message: msg.message, dataStamp: dataStamp } });
-            console.log('发送消息：', msg.message)
-            console.log(B2BchatidGernerator(msg.from, msg.to))
+            // console.log('发送消息：', msg.message)
+            // console.log(B2BchatidGernerator(msg.from, msg.to))
+            
         });
-
-        // B2B保存聊天记录，并转发
-        socket.on('B2Bmessage:to11111', async function (msg) {
-            const luascript = fs.readFileSync(__dirname + '\\..\\lua\\B2BchatInsert.lua', 'utf-8');
-            const luaresult = await redis0.eval(luascript, 2, '123456', time.getTimestamp(), Date.now(), msg.message);
-            console.log(luaresult)
-            // return luaresult
-        })
-
-        // test 用户id，好友聊天id数组,pageNum,pageSize,浏览器最新时间戳，没有则默认服务器前7天
-        socket.on('history:chatInfo', async (data) => {
-            console.log(data)
-
-            const update = await fs.readFileSync(__dirname + '\\..\\lua\\B2BchatGetByPage.lua', 'utf-8');
-            const pageSize = 20;//每页20条
-            var B2BchatId = null;
-            //检测参数是否合法
-            if (data?.chatList == null || data?.chatList == undefined) {
-                io.to(socket.id).emit('server', { status: 403, data: '参数不完整' });
-                socket.disconnect()
-                return
-            }
-
-            data.timeStamp = data.timeStamp != undefined ? data.timeStamp : 0; //如果不存在则默认0
-            var pageNum = data?.pageNum != undefined ? data.pageNum : 1;//如无页码则从1开始
-
-            for (let i = 0; i < data.chatList.length; i++) {
-                B2BchatId = B2BchatidGernerator(data.chatList[i], 123);
-                console.log(B2BchatId)
-                const res = await redis0.eval(update, 1, B2BchatId, pageNum, pageSize, data.offsetNum);
-                console.log(res)
-                io.to(socket.id).emit('server', { status: 200, data: res });
-            }
-
-        })
-
 
 
         // 监听用户断开连接事件
         socket.on('disconnect', (reason) => {
-            setTimeout(() => {
-                socket.disconnect(true);
-                // 查找并删除  
-                for (let [userId, item] of onlineUserList.entries()) {
-                    console.log(userId)
-                    console.log(item)
-                    if (item.socketid === socket.id) {
-                        // 找到匹配项，删除
-                        onlineUserList.delete(userId);
-                        break; // 匹配项已找到并删除，跳出循环
+            console.log(reason)
+            //每个disconnect请求都先将socket关闭
+            socket.disconnect(true);
+            //'client namespace disconnect'表示是服务器登出，浏览器被动登出
+            //'transport close'表示浏览器主动登出
+            if (reason != 'client namespace disconnect') {
+                console.log(`用户${socket.handshake.query.id}已断开连接，socket进入销毁倒计时`);
+                let tempOnlineUser = {};
+                tempOnlineUser = onlineUserList.get(socket.handshake.query.id)
+                tempOnlineUser.disconnect = true
+                tempOnlineUser.timeStamp = Date.now()
+                onlineUserList.set(socket.handshake.query.id.toString(), tempOnlineUser)
+                setTimeout(() => {
+                    tempOnlineUser = onlineUserList.get(socket.handshake.query.id.toString())
+
+                    if (tempOnlineUser.disconnect == true || ((Date.now() - tempOnlineUser.timeStamp) >= 10000)) {
+                        console.log(`用户:"${socket.handshake.query.id}"的会话已销毁`);
+                        onlineUserList.delete(socket.handshake.query.id.toString());
+                        console.log(onlineUserList)
+                    } else {
+                        tempOnlineUser = onlineUserList.get(socket.handshake.query.id)
+                        tempOnlineUser.disconnect = false
+                        onlineUserList.set(socket.handshake.query.id.toString(), tempOnlineUser)
+                        console.log(`用户:"${socket.handshake.query.id}"的会话已重新连接`);
+                        console.log(onlineUserList)
                     }
-                }
-                console.log(`socket.id=${socket.id}会话已销毁`);
-            }, 180000);//断开连接3分钟后销毁
-            console.log(`用户已断开连接，socket.id=${socket.id}`);
+
+                    tempOnlineUser = null;
+
+                }, 10000);//断开连接10秒后销毁
+            }
+
+
         });
 
         // 获取聊天记录
         socket.on('getHistory', async (data) => {
-            // console.log(socket.handshake.query.id)
-            // console.log(data)
+            // 验证本次请求的用户是否在服务器中
+            if (!verifyAuthority(socket.handshake.query.id, io)) {
+                // 登出事件
+                io.to(onlineUserList.get(socket.handshake.query.id.toString()).socketid).emit('logout', { status: 500, data: { message: '非法访问', timeStamp: time.getTimestamp() } });
+                // 关闭连接
+                socket.disconnect(true);
+                return
+            }
 
             const B2BHistoryLuaOld = fs.readFileSync(__dirname + '\\..\\lua\\B2BHistoryOld.lua', 'utf-8');
             const chatId = B2BchatidGernerator(socket.handshake.query.id, data.friendId)
@@ -153,6 +157,17 @@ module.exports = function (io) {
 }
 //604800000
 
+
+// 每次转发消息前需要验证用户是否已经存在于服务器,如果不存在则下线处理
+function verifyAuthority(id, io) {
+    if (onlineUserList.get(id.toString()) == undefined) {
+        return false
+    } else {
+        return true
+    }
+}
+
+// 对redis中返回的聊天记录进行处理
 function luaHostoryResultToJSON(friendId, id, luaresult) {
     let ifMore = true
     let JSONlua = []
@@ -187,7 +202,7 @@ function luaHostoryResultToJSON(friendId, id, luaresult) {
         if (JSONluaItem.from == undefined || JSONluaItem.to == undefined || JSONluaItem.message == undefined || JSONluaItem.timeStamp == undefined) {
             continue;
         } else {
-            console.log(JSONluaItem)
+            // console.log(JSONluaItem)
             JSONlua.push(JSONluaItem);
         }
     }

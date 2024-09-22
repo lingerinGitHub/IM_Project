@@ -5,6 +5,8 @@ import { useloginUserInfoStore } from '../stores/loginUserInfoStore';
 import { usechatInfoStore } from '../stores/chatInfoStore';
 import { getTimestamp } from '../utils/time.ts';
 import { chatInfo, Role } from '../class/chatInfoClass.ts';
+import { logout } from '../api/login_api.ts';
+import router from '../router/index.ts';
 
 const logger = new Logger({ name: 'wsServer' })
 
@@ -70,15 +72,12 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
                 this.loginUserInfoStore.wsConnectTimeStamp = msg.data.timeStamp;
                 logger.debug(this.loginUserInfoStore.wsConnectTimeStamp)
             });
-            //断开链接路由
-            this.io.on("disconnect", () => {
-                console.log("断开连接")
-            });
+
 
             //获取历史消息路由
-            this.io.on("historyMessage", (chatInfoList:any) => {
+            this.io.on("historyMessage", (chatInfoList: any) => {
                 chatInfoList = JSON.parse(chatInfoList)
-                if(chatInfoList.id != this.loginUserInfoStore.id){
+                if (chatInfoList.id != this.loginUserInfoStore.id) {
                     // logger.debug(Object.keys(chatInfoList))
                     // logger.debug(this.loginUserInfoStore.id)
                     logger.error('bug问题！请联系管理员')
@@ -87,8 +86,11 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
                 this.chatInfoStore.HistoryChatInfoInsert(chatInfoList.friendId, chatInfoList.data, chatInfoList.ifMore)
             });
 
-            this.io.on("heartbreat", ()=>{
-                this.io.emit()
+            this.io.on("logout", async () => {
+                //断开之前先刷新时间戳
+                this.io.disconnect()
+                logout()
+                router.push({ path: '/login' })
             })
         },
 
@@ -107,16 +109,15 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
             await this.chatInfoStore.chatInfoInsert(Role.user, toId, newChatInfo)
         },
 
-        B2BGetHistory(friendList: [{}] | any) {
+        async B2BGetHistory(friendList: [{}] | any) {
             // 登录的时候获取历史信息
-            for(let i=0; i<friendList.length; i++){
+            for (let i = 0; i < friendList.length; i++) {
                 logger.info(`正在获取${friendList[i].id}的聊天历史信息`)
-                this.io.emit("getHistory", {
-                    // friendId, timeStamp, pageNum(调用了几次)
+                await this.io.emit("getHistory", {
                     friendId: friendList[i].id
                 })
             }
-        }
+        },
     },
     // persist: true,
 

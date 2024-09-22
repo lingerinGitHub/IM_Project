@@ -27,8 +27,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, Ref, ref } from 'vue';
-import { login_api } from '../api/login_api.ts'
+import { reactive, ref } from 'vue';
+import { login_api, tokenLogin_api } from '../api/login_api.ts'
 import { ElNotification, ElLoading } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useloginUserInfoStore } from '../stores/loginUserInfoStore.ts'
@@ -37,7 +37,6 @@ const logger = new Logger({ name: "login" });
 
 const loginUserInfoStore = useloginUserInfoStore()
 
-console.log(loginUserInfoStore.id)
 const router = useRouter()//路由实例化
 const photourl = ref('../../public/壁纸_compressed.JPG');
 const url = ref('../../public/壁纸_compressed.JPG');

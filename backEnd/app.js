@@ -103,7 +103,7 @@ app.use(async (ctx, next) => {
 // app.ws.use(chat.routes(), chat.allowedMethods())
 // 以下路由需要验证身份
 // 路由中间件
-app.use(koajwt({ secret: 'secretkey' }).unless({ path: [ '/static', '/getHistory','/login', '/test', '/get', '/koa', '/', '/ws','/sessionTest', '/getFriendList'] }));
+// app.use(koajwt({ secret: 'secretkey' }).unless({ path: [ '/token','/static', '/getHistory','/login', '/test', '/get', '/koa', '/', '/ws','/sessionTest', '/getFriendList'] }));
 app.use(login.routes(), login.allowedMethods())
 app.use(resource.routes(), resource.allowedMethods())
 app.use(testRouter.routes(), testRouter.allowedMethods())

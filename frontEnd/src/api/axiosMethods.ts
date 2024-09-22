@@ -28,7 +28,7 @@ export async function axiosPost(type:string, url:string, data:object): Promise<a
                 'data': err.response.data.data
             }
             // console.log(errBody)
-            logger.error(errBody)
+            // logger.error(errBody)
             return errBody
         })
 }

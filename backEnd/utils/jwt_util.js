@@ -23,7 +23,20 @@ function verifyToken(token) {
     })
 }
 
+//验证token是否合法,合法返回用户id
+function verifyTokenId(token) {
+    return jwt.verify(token, tokenSecret, (err, decoded) => {
+        if (err) {
+            console.log('Error: Invalid Token!');
+            return false;
+        } else {
+            return decoded;
+        }
+    })
+}
+
 module.exports = {
     generateToken,
-    verifyToken
+    verifyToken,
+    verifyTokenId
 }

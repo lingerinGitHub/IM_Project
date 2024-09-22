@@ -57,7 +57,7 @@ axiosInstance.interceptors.request.use(
 //response拦截器
 axiosInstance.interceptors.response.use(
 	(response: any) =>{
-        console.log('该响应经过了请求拦截器')
+        console.log('该响应经过了响应拦截器')
 		const code = response.status
 		if(code<200 ||code>300){
 			// Notification.error({
@@ -72,9 +72,9 @@ axiosInstance.interceptors.response.use(
 				// loadingInstance.close();
 			}
 			//如果相应无异常,则检查是否需要保存token
-			if(response.data && response.data.token){
-				console.log('response: '+response)
-				localStorage.setItem('token',response.data.token);
+			if(response.data && response.data.data.token){
+				console.log('response.data.data.token: '+response.data.data.token)
+				localStorage.setItem('token',response.data.data.token);
 			}
 			return response.data
 		}

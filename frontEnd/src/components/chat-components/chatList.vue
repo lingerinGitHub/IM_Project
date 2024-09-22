@@ -35,7 +35,7 @@
 import { Logger } from 'tslog';
 import { ref, reactive } from 'vue'
 import { vDraggable } from 'vue-draggable-plus'
-import router from '../../router';
+import router from '../../router/index.ts';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 const chatInfoStore = usechatInfoStore()
 var props = defineProps(['friendList', 'account']); //父传子数组|对象写法都可以
@@ -171,7 +171,7 @@ function scrollToTop() {
                     z-index: 1;
                     height: 100%;
                     width: 100%;
-                    background-color: #fff;
+                    background-color: #f5f5f5;
                     clip-path: circle(50% at 50% 50%);
                 }
 

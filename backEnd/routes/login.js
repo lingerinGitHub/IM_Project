@@ -1,8 +1,7 @@
 const router = require('koa-router')()
 const { tokenSecret } = require('../common/password.js')
-const { generateToken } = require('../utils/jwt_util.js')
+const { verifyTokenId, generateToken } = require('../utils/jwt_util.js')
 const knex = require('../config/knex_config.js');
-
 const fs = require('fs');
 const { redis0 } = require('../utils/redis_connect.js');
 const { error } = require('console');
@@ -48,12 +47,71 @@ router.post('/login', async (ctx, next) => {
         'updated_at': res[0].updated_at,
         'token': token
     }
-    // 使用ctx.session来保存用户id
+    // 使用ctx.session来保存用户id,保存在cookie中提供下一次使用
     ctx.session.id = res[0].id
     ctx.body = JSON.stringify({
         'status': 200,
         'data': response,
     });
+})
+
+router.post('/tokenSessionLogin', async (ctx, next) => {
+    // 对访问的接口参数过滤
+    if (ctx.request.body?.data?.token == undefined || ctx?.session?.id == undefined) {
+        ctx.status = 500;
+        ctx.body = '非法访问！';
+        console.log('非法访问/login！')
+        return
+    }
+
+    // 对token和session验证通过则登录成功
+    const userData = verifyTokenId(ctx.request.body.data.token)
+
+    if(userData == false){
+        ctx.status = 500;
+        ctx.body = 'token过期！';
+    }
+
+    if (userData.data.id == ctx.session.id) {
+
+        const res = await knex.select().from('users').where({
+            'id': userData.data.id,
+            'is_delete': 0
+        })// 需要对结果进行判断
+            .catch(err => {
+                console.log(err)
+                ctx.status = 500;
+                ctx.body = {data:'服务器异常'}
+            })
+
+
+        const token = generateToken(res[0].id)
+        var response = {
+            'id': res[0].id,
+            'account': res[0].account,
+            'province': res[0].province,
+            'city': res[0].city,
+            'photo': res[0].photo,
+            'created_at': res[0].created_at,
+            'updated_at': res[0].updated_at,
+            'token': token
+        }
+
+        ctx.set("Content-Type", "application/json");
+        ctx.type = 'json'
+        ctx.body = JSON.stringify({
+            'status': 200,
+            'data': response,
+        });
+        return
+    }
+    ctx.status = 500;
+    ctx.body = {data:"非法访问！"};
+})
+
+// 测试可删除
+router.get('/getToken', (ctx, next) => {
+    ctx.body = generateToken(114514)
 })
 
 router.post('/getFriendList', async function (ctx, next) {
@@ -105,7 +163,6 @@ router.post('/getFriendList', async function (ctx, next) {
     });
 })
 
-
 router.get('/getHistory', async function (ctx, next) {
     const B2BHistoryLuaOld = fs.readFileSync(__dirname + '\\..\\lua\\B2BHistoryOld.lua', 'utf-8');
     const luaresult = await redis0.eval(B2BHistoryLuaOld, 1, '1_2', 0, 80, 1726217021);
@@ -145,7 +202,7 @@ function luaHostoryResultToJSON(luaresult) {
             console.log(`login.js: ${error}`)
         }
 
-        if( JSONluaItem.from == undefined || JSONluaItem.to == undefined || JSONluaItem.message == undefined || JSONluaItem.timeStamp == undefined ){
+        if (JSONluaItem.from == undefined || JSONluaItem.to == undefined || JSONluaItem.message == undefined || JSONluaItem.timeStamp == undefined) {
             continue;
         } else {
             console.log(JSONluaItem)

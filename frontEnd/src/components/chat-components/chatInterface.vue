@@ -236,7 +236,7 @@ onMounted(() => {
                     z-index: 1;
                     height: 65%;
                     width: 65%;
-                    background-color: lightblue;
+                    background-color: #f5f5f5;
                     clip-path: circle(50% at 50% 50%);
                 }
 

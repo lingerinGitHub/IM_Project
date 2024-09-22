@@ -24,7 +24,8 @@ const talkbubble = ref(null) as any;
 const container = ref(null) as any;
 
 onMounted(() => {
-    const height = talkbubble.value.offsetHeight as number;
+    console.log(talkbubble.value.offsetHeight)
+    const height = talkbubble.value.offsetHeight;
     // console.log(height)
     container.value.style.height = (height + 20) + 'px';
     // console.log(container.value.offsetHeight)
