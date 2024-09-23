@@ -41,7 +41,7 @@ export const usechatInfoStore = defineStore('chatInfoStore', {
         },
 
         //保存服务器返回历史记录id:登录用户id，historyData
-        async HistoryChatInfoInsert(friendId:number,historyDataList:resChatList[], ifMore: boolean) {
+        async HistoryChatInfoInsert(friendId:number,historyDataList:resChatList[], _ifMore: boolean) {
             let role:Role; //对于该用户来说的角色
             for (let i = 0; i < historyDataList.length; i++) {
                 role = historyDataList[i].from == friendId ? Role.opposite : Role.user;

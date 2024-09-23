@@ -7,32 +7,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    ChatEcharts: typeof import('./src/components/chatEcharts.vue')['default']
-    'ChatEcharts(已废弃)': typeof import('./src/components/chatEcharts(已废弃).vue')['default']
     ChatFrame: typeof import('./src/components/chatFrame.vue')['default']
     ChatInterface: typeof import('./src/components/chat-components/chatInterface.vue')['default']
     ChatList: typeof import('./src/components/chat-components/chatList.vue')['default']
-    'ChatList(已废弃)': typeof import('./src/components/chatList(已废弃).vue')['default']
-    copy: typeof import('./src/components/chatList copy.vue')['default']
-    ElBacktop: typeof import('element-plus/es')['ElBacktop']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
-    ElOption: typeof import('element-plus/es')['ElOption']
-    ElSelect: typeof import('element-plus/es')['ElSelect']
-    GridComponen: typeof import('./src/components/GridComponen.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    List: typeof import('./src/components/chat-components/List.vue')['default']
     Nav: typeof import('./src/components/chat-components/nav.vue')['default']
-    OnlineAndNumber: typeof import('./src/components/onlineAndNumber.vue')['default']
-    'OnlineAndNumber(已废弃)': typeof import('./src/components/onlineAndNumber(已废弃).vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SendChatArea: typeof import('./src/components/sendChatArea.vue')['default']
-    'SendChatArea(已废弃)': typeof import('./src/components/sendChatArea(已废弃).vue')['default']
-    UserGrid: typeof import('./src/components/userGrid.vue')['default']
-    Userinfo: typeof import('./src/components/userinfo.vue')['default']
-    'Userinfo(已废弃)': typeof import('./src/components/userinfo(已废弃).vue')['default']
   }
 }

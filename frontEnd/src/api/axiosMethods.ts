@@ -1,10 +1,9 @@
 import { resBody } from '../class/resBody';
 import axiosInstance from '../utils/axiosInterceptorConfig';
-import { Logger } from "tslog";
 
 //输入参数：请求类型，url地址，数据，返回json{status,data}
 export async function axiosPost(type:string, url:string, data:object): Promise<any> {
-    
+
     const resbody = new resBody(type, data)
     return await axiosInstance.axiosInstance.post(url, { data: resbody.getData() },
         {

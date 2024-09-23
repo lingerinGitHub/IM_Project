@@ -1,5 +1,5 @@
 
-import { axiosGet, axiosPost } from './axiosMethods.ts';
+import { axiosPost } from './axiosMethods.ts';
 import { useloginUserInfoStore } from '../stores/loginUserInfoStore.ts';
 import { useSocket_api_store } from '../stores/socket.ts';
 import { usechatInfoStore } from '../stores/chatInfoStore.ts';

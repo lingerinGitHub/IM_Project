@@ -1,8 +1,7 @@
 
-import { defineStore } from "pinia";
-import { Logger } from "tslog";
+import { defineStore } from "pinia"
 import { serverpath } from "../config/serverPath";
-const logger = new Logger({ name: 'loginUserStore' })
+
 
 interface friendChatInfo {
     timeStamp: string,
@@ -32,22 +31,7 @@ interface friend {
     photo: string,
     updated_at: string,
     chatInfo?: friendChatTnfoConstroctor //将最新一条聊天记录保存在此
-}
-
-interface loginUser {
-    id: number,
-    account: String,
-    photo: String,
-    province: String,
-    city: String,
-    socketID: String,
-    create_at: String,
-    update_at: String,
-    token: String,
-    wsConnectTimeStamp: String,
-    friendList: friend[],
-    last_update: String
-}
+};
 
 export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
     state: () => {

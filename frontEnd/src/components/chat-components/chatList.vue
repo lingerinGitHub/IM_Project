@@ -32,20 +32,19 @@
 </template>
 
 <script lang="ts" setup>
-import { Logger } from 'tslog';
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { vDraggable } from 'vue-draggable-plus'
 import router from '../../router/index.ts';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 const chatInfoStore = usechatInfoStore()
 var props = defineProps(['friendList', 'account']); //父传子数组|对象写法都可以
-const logger = new Logger({ name: 'chatList' })
-const selectChatId = ref<number>(0)
+const selectChatId = ref<number>(0);
+
 function onUpdate() {
-    logger.info('onUpdate')
+    // logger.info('onUpdate')
 }
 function onStart() {
-    logger.info('onStart')
+    // logger.info('onStart')
 }
 
 
@@ -57,17 +56,16 @@ function selectChat(index: number, id: number) {
     var tempListItem = props.friendList[index]
     props.friendList.splice(index, 1)
     props.friendList.unshift(tempListItem)
-    logger.info(`selectChatId: ${selectChatId.value}`)
     scrollToTop()
 }
 
 
 //返回顶部
 function scrollToTop() {
-    // const selectChat: HTMLCollection = document.getElementsByClassName('chatItem')
+
     const anchor: HTMLElement | any = document.getElementById('anchor')
-    // anchor.scrollIntoView({ behavior: 'smooth' });
-    anchor.scroll({ top: 0, behavior: "smooth" })
+    anchor.scroll({ top: 0, behavior: "smooth" });
+
 }
 </script>
 

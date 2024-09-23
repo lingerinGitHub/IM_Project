@@ -17,7 +17,7 @@
             </div>
             <div class="function">
                 <ul class="menu-list">
-                    <li v-for="(item, index) in iconfontList" class="iconfont" @click="selectFunction(index)"
+                    <li v-for="(item, index) in iconfontList" class="iconfont" @click="selectFunction"
                         :key="index">
                         <el-icon class="icon" size="1.8rem" color="#727885">
                             <component :is="item" />
@@ -58,11 +58,10 @@
 
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { useRoute } from 'vue-router'
-import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue'
-import { Logger } from 'tslog';
-import V3Emoji from 'vue3-emoji'
-import 'vue3-emoji/dist/style.css'
+import { useRoute } from 'vue-router';
+import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue';
+import V3Emoji from 'vue3-emoji';
+import 'vue3-emoji/dist/style.css';
 import chatFrame from '../chatFrame.vue';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 import { useloginUserInfoStore } from '../../stores/loginUserInfoStore';
@@ -71,8 +70,7 @@ const socket_api_store = useSocket_api_store()
 const chatInfoStore = usechatInfoStore()
 const { friendList, photo } = useloginUserInfoStore()
 const currentId = ref<number>(0)
-const message = ref<string>("")
-const logger = new Logger({ name: 'chatInterface' })
+const message = ref<string>("");
 const imgUrl = ref<string>('');
 const route = useRoute()
 const iconfontList = [
@@ -124,13 +122,13 @@ function clickEmoji(val:any){
   message.value += val;
 };
 
-function selectFunction(index: number) {
-    logger.info(`选择了"${index}"号功能项`)
+function selectFunction() {
+    // logger.info(`选择了"${index}"号功能项`)
 }
 
 async function sendMessage(toId: number, sendmessage: string) {
     if (sendmessage == '') {
-        logger.info(sendmessage)
+
         return
     }
     await socket_api_store.B2Bmessageto(toId, sendmessage)
@@ -140,19 +138,17 @@ async function sendMessage(toId: number, sendmessage: string) {
 
 //返回顶部
 function scrollToBottom() {
-    // const selectChat: HTMLCollection = document.getElementsByClassName('chatItem')
-    logger.info('返回底部')
-    // const top: HTMLElement | any = document.getElementById('anchor')
+
     const chatInfos: HTMLElement | any = document.getElementById('chat-infos')
     if (chatInfos == null || chatInfos == undefined) {
-        logger.info('暂无聊天记录')
+
     } else {
         chatInfos.scroll({ top: chatInfos.scrollHeight, behavior: "smooth" })
-        // chatInfos.scroll({ Bottom: 0, behavior: "smooth" })
+        
     }
 }
 
-var props = defineProps(['id']);
+
 watch(() => route.params.id, (newId, oldId) => {
     // 对路由变化做出响应...
     if (oldId == newId) {
@@ -166,7 +162,7 @@ watch(() => route.params.id, (newId, oldId) => {
     }
     currentId.value = Number(newId[1])
     friendInfo = friendList.find((item) => {
-        logger.info(currentId.value)
+
         return item.id == Number(currentId.value)
     })
     // 动态路由匹配时生命周期钩子不会调用
@@ -175,7 +171,7 @@ watch(() => route.params.id, (newId, oldId) => {
 }, { immediate: true, deep: true })
 
 // 动态路由匹配时生命周期钩子不会调用
-watch(() => route.params.id, async (newId, oldId) => {
+watch(() => route.params.id, async () => {
     // 对路由变化做出响应...
     await nextTick();//等待dom渲染完成
     const chatInfos: HTMLElement | any = document.getElementById('chat-infos')
@@ -183,7 +179,7 @@ watch(() => route.params.id, async (newId, oldId) => {
 })
 
 // 接收到新消息则自动触底
-watch(() => chatInfoStore.chatInfoList[currentId.value], async (newId, oldId) => {
+watch(() => chatInfoStore.chatInfoList[currentId.value], async () => {
     // console.log(newId.length)
     // console.log(oldId)
     await nextTick();//等待dom渲染完成

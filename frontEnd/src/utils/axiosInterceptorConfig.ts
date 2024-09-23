@@ -1,17 +1,12 @@
 import axios from 'axios'; //引入axios
-import { InternalAxiosRequestConfig } from 'axios';
+
 import moment from 'moment';
 moment.locale('zh-cn');//设置时区
 
 //创建axios实例
 let axiosInstance = axios.create({
     timeout: moment.now() //请求时间
-})
-
-//返回本地存放token
-function getToken() {
-    return localStorage.getItem('token');
-}
+});
 
 // 在相应之前中断系统操作
 let loadingInstance = null;//先声明变量，防止报错
@@ -22,9 +17,7 @@ let loadingInstance = null;//先声明变量，防止报错
 //     method: 'GET',
 //     type: 'customType', // 添加自定义属性
 //   };
-interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
-    type: string;
-}
+
 
 
 //request拦截器
@@ -33,8 +26,8 @@ axiosInstance.interceptors.request.use(
         // if (getToken()) {
         //     config.headers['Authorization'] = getToken() //让每个请求携带自定义的token，请根据实际情况自行修改
         // }
-		console.log(config)
-		console.log('该请求经过了请求拦截器')
+		// console.log(config)
+		// console.log('该请求经过了请求拦截器')
         // config.headers['Content-Type'] = 'application/json'这里默认type为json了
         //这个headers头部的Content-Type：一般都是application/json,但是也有部分接口需要传递的是formData格式的，此时就需要用到qs，为了做区分，在config参数中添加一个type变量来进行判断处理
         if (config.type && config.type == 'form') {
@@ -60,7 +53,7 @@ axiosInstance.interceptors.request.use(
 //response拦截器
 axiosInstance.interceptors.response.use(
 	(response: any) =>{
-        console.log('该响应经过了响应拦截器')
+        // console.log('该响应经过了响应拦截器')
 		const code = response.status
 		if(code<200 ||code>300){
 			// Notification.error({

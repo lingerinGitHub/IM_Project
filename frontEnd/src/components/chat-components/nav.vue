@@ -23,9 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue'
-import { Logger } from 'tslog'
-const logger = new Logger({ name: 'nav' })
+import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue';
 var props = defineProps(['photoUrl']);
 const iconfontList = [
     ChatDotRound,

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import chatInterface from '../components/chat-components/chatInterface.vue';
 import { useloginUserInfoStore } from '../stores/loginUserInfoStore';
-import { login_api, tokenLogin_api } from '../api/login_api.ts'
+import { tokenLogin_api } from '../api/login_api.ts'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,11 +23,7 @@ const router = createRouter({
                 }
             ]
         },
-        {
-            path: '/dragTest',
-            name: 'dragTest',
-            component: () => import('../views/dragTest.vue')
-        }
+
     ]
 })
 
@@ -35,8 +31,8 @@ const router = createRouter({
 //每次跳转都应该检查id是否在好友列表内
 router.beforeEach(async (to, from) => {
 
-    console.log(from.path)
-    console.log(to.path)
+    // console.log(from.path)
+    // console.log(to.path)
 
     if (to.path == '/') {
         // 自动登录
@@ -44,9 +40,8 @@ router.beforeEach(async (to, from) => {
         var autoLogin: boolean = false
         if (token != undefined || token != null) {
             // 调用自动登录api
-            autoLogin = await tokenLogin_api(token)
-            //返回true表示登录完毕
-            console.log(autoLogin)
+            autoLogin = await tokenLogin_api(token);
+            //返回true表示登录完毕;
             if(autoLogin == true) {
                 router.push({ path: '/chat' })
                 return
@@ -64,7 +59,7 @@ router.beforeEach(async (to, from) => {
             // 调用自动登录api
             autoLogin = await tokenLogin_api(token)
             //返回true表示登录完毕
-            console.log(autoLogin)
+            // console.log(autoLogin)
             if(autoLogin == true) {
                 router.push({ path: '/chat' })
                 return
@@ -79,11 +74,10 @@ router.beforeEach(async (to, from) => {
 
     // 判断好友是否在好友列表,禁止非法访问
     if (from.path != '/login' && from.path != '/' && to.path.slice(0, 5) == '/chat') {
-        console.log('判断好友是否在好友列表')
-        const loginUserInfoStore = useloginUserInfoStore()
+        const loginUserInfoStore = useloginUserInfoStore();
         try {
-            const ifExist = loginUserInfoStore.friendList.findIndex(function (item, index) {
-                console.log(item.id)
+            const ifExist = loginUserInfoStore.friendList.findIndex(function (item) {
+                // console.log(item.id)
                 return item.id == Number(to.path.slice(10))
             })
             if (ifExist == -1) {
