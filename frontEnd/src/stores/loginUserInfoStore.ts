@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { Logger } from "tslog";
-import path from 'path'
+import { serverpath } from "../config/serverPath";
 const logger = new Logger({ name: 'loginUserStore' })
 
 interface friendChatInfo {
@@ -89,7 +89,7 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
             this.account = account;
         },
         setPhoto(photo: string) {
-            this.photo = ('http://localhost:8000/static?name='+photo);
+            this.photo = (`http://${serverpath}/static?name=${photo}`);
         },
         setProvince(province: string) {
             this.province = province;

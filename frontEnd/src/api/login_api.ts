@@ -4,6 +4,7 @@ import { useloginUserInfoStore } from '../stores/loginUserInfoStore.ts';
 import { useSocket_api_store } from '../stores/socket.ts';
 import { usechatInfoStore } from '../stores/chatInfoStore.ts';
 import { Logger } from 'tslog';
+import { serverpath } from '../config/serverPath.ts';
 // import { storeToRefs } from 'pinia'
 const logger = new Logger({ name: 'login_api' })
 // 使用token登录，必须同时具有cookie，token
@@ -20,7 +21,7 @@ async function login_api(type: string, data: object): Promise<object> {
     const logger = new Logger({ name: 'login_api' })
     const loginUserInfoStore = useloginUserInfoStore()
 
-    const resbody = await axiosPost(type, 'http://localhost:8000/login', data)
+    const resbody = await axiosPost(type, `http://${serverpath}/login`, data)
     //处理登录逻辑
     logger.info(resbody)
     if (resbody.status == 200) {
@@ -59,7 +60,7 @@ async function login_api(type: string, data: object): Promise<object> {
 
 
 async function tokenLogin_api(token: string): Promise<boolean> {
-    const resbody = await axiosPost('json', 'http://localhost:8000/tokenSessionLogin', { token: token })
+    const resbody = await axiosPost('json', `http://${serverpath}/tokenSessionLogin`, { token: token })
     const socket_api_store = useSocket_api_store()
     const loginUserInfoStore = useloginUserInfoStore()
 
@@ -102,7 +103,7 @@ async function tokenLogin_api(token: string): Promise<boolean> {
 }
 
 async function getFriendList(data: object) {
-    const friendList = await axiosPost('json', 'http://localhost:8000/getFriendList', data)
+    const friendList = await axiosPost('json', `http://${serverpath}/getFriendList`, data)
     logger.info(friendList.data.friendList)
     return friendList;
 }

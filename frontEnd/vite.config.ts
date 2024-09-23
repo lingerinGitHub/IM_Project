@@ -12,6 +12,9 @@ import process from 'process'; // 引入process模块
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define:{
+    'process.env':{},
+  },
   plugins: [
     vue(),
     AutoImport({

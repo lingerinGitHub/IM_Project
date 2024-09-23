@@ -33,6 +33,7 @@ axiosInstance.interceptors.request.use(
         // if (getToken()) {
         //     config.headers['Authorization'] = getToken() //让每个请求携带自定义的token，请根据实际情况自行修改
         // }
+		console.log(config)
 		console.log('该请求经过了请求拦截器')
         // config.headers['Content-Type'] = 'application/json'这里默认type为json了
         //这个headers头部的Content-Type：一般都是application/json,但是也有部分接口需要传递的是formData格式的，此时就需要用到qs，为了做区分，在config参数中添加一个type变量来进行判断处理
@@ -45,7 +46,9 @@ axiosInstance.interceptors.request.use(
         if (config.loading) {
             // loadingInstance = Loading.service({ fullscreen: true })需要等待返回值的时候
         }
+		console.log(config)
         return config
+		
     },
     error => {
         console.log(error);

@@ -7,6 +7,7 @@ import { getTimestamp } from '../utils/time.ts';
 import { chatInfo, Role } from '../class/chatInfoClass.ts';
 import { logout } from '../api/login_api.ts';
 import router from '../router/index.ts';
+import { serverpath } from '../config/serverPath.ts'
 
 const logger = new Logger({ name: 'wsServer' })
 
@@ -38,7 +39,7 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
 
             console.log('wxConnection')
 
-            this.io = socket('ws://localhost:8000', {
+            this.io = socket(`ws://${serverpath}`, {
                 reconnectionDelay: 10000,
                 query: {
                     id: id,

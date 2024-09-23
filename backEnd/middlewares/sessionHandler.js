@@ -90,7 +90,8 @@ module.exports = function sessionHandler(app, keys) {
         console.log(`用户:"${ctx.session.id}"访问次数： ${ctx.session.count} + ${ctx.sessionId}`)
         if (!ctx.session.time) {
             ctx.session.time = time.getTimestamp();
-        } else if ((ctx.session.count > 10) && now - ctx.session.time < 60) {
+            // 访问次数
+        } else if ((ctx.session.count > 100) && now - ctx.session.time < 60) {
             ctx.status = 429;
             throw new Error("访问次数过多，请稍后再试");
         } else if (now - 60 > ctx.session.time) {
