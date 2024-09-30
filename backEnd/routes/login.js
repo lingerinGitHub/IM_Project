@@ -9,14 +9,14 @@ const { B2BchatidGernerator } = require('../utils/chatidGenerator.js');
 
 router.post('/login', async (ctx, next) => {
     //判断请求体是否正确，字段是否存在
-    if (ctx.request.body?.data?.account == undefined || ctx.request.body?.data?.password == undefined) {
+    if (ctx.request.body?.data?.email == undefined || ctx.request.body?.data?.password == undefined) {
         ctx.status = 500;
         ctx.body = '非法访问/login！';
         console.log('非法访问/login！')
         return
     }
     const res = await knex.select().from('users').where({
-        'account': ctx.request.body.data.account,
+        'email': ctx.request.body.data.email,
         'password': ctx.request.body.data.password,
         'is_delete': 0
     })
@@ -39,7 +39,7 @@ router.post('/login', async (ctx, next) => {
     const token = generateToken(res[0].id)
     var response = {
         'id': res[0].id,
-        'account': res[0].account,
+        'email': res[0].email,
         'province': res[0].province,
         'city': res[0].city,
         'photo': res[0].photo,
@@ -88,7 +88,7 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
         const token = generateToken(res[0].id)
         var response = {
             'id': res[0].id,
-            'account': res[0].account,
+            'email': res[0].email,
             'province': res[0].province,
             'city': res[0].city,
             'photo': res[0].photo,

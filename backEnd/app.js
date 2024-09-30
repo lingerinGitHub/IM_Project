@@ -22,7 +22,8 @@ const { passKey } = require('./common/password.js')
 const login = require('./routes/login.js');
 const { error } = require('console');
 const static = require('koa-static');
-const path = require('path')
+const path = require('path');
+const register = require('./routes/register.js')
 
 //socjet.io跨域配置
 const corsOptions = {
@@ -101,12 +102,15 @@ app.use(async (ctx, next) => {
 
 // app.ws.use(basic.routes(), basic.allowedMethods())
 // app.ws.use(chat.routes(), chat.allowedMethods())
+
+
 // 以下路由需要验证身份
 // 路由中间件
 // app.use(koajwt({ secret: 'secretkey' }).unless({ path: [ '/token','/static', '/getHistory','/login', '/test', '/get', '/koa', '/', '/ws','/sessionTest', '/getFriendList'] }));
 app.use(login.routes(), login.allowedMethods())
 app.use(resource.routes(), resource.allowedMethods())
 app.use(testRouter.routes(), testRouter.allowedMethods())
+app.use(register.routes(), register.allowedMethods())
 
 // app.use(chat.routes(), chat.allowedMethods())
 // app.use(users.routes(), users.allowedMethods())
