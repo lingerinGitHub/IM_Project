@@ -39,7 +39,7 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
             Latest_time: undefined as unknown as string,
             // 登录用户信息
             id: undefined as unknown as number,
-            account: String(''),
+            email: String(''),
             photo: String(''),
             province: String(''),
             city: String(''),
@@ -69,8 +69,8 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
         setId(id: number) {
             this.id = id;
         },
-        setAccount(account: string) {
-            this.account = account;
+        setemail(email: string) {
+            this.email = email;
         },
         setPhoto(photo: string) {
             this.photo = (`http://${serverpath}/static?name=${photo}`);

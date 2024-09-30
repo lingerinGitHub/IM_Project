@@ -5,6 +5,7 @@ moment.locale('zh-cn');//设置时区
 
 //创建axios实例
 let axiosInstance = axios.create({
+	withCredentials: true, //跨域请求时发送cookie
     timeout: moment.now() //请求时间
 });
 
@@ -68,7 +69,7 @@ axiosInstance.interceptors.response.use(
 				// loadingInstance.close();
 			}
 			//如果相应无异常,则检查是否需要保存token
-			if(response.data && response.data.data.token){
+			if(response?.data && response?.data?.data?.token){
 				console.log('response.data.data.token: '+response.data.data.token)
 				localStorage.setItem('token',response.data.data.token);
 			}

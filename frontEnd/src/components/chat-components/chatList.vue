@@ -1,6 +1,6 @@
 <template>
     <div class="list-container">
-        <h2 class="h2">{{ props.account }}聊天室</h2>
+        <h2 class="h2">{{ props.email }}聊天室</h2>
         <h3 class="h3">聊天列表</h3>
         <div class="chat-list">
             <TransitionGroup v-draggable="[props.friendList, { animation: 150, onUpdate, onStart, }]" type="transition"
@@ -37,7 +37,7 @@ import { vDraggable } from 'vue-draggable-plus'
 import router from '../../router/index.ts';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 const chatInfoStore = usechatInfoStore()
-var props = defineProps(['friendList', 'account']); //父传子数组|对象写法都可以
+var props = defineProps(['friendList', 'email']); //父传子数组|对象写法都可以
 const selectChatId = ref<number>(0);
 
 function onUpdate() {

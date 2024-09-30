@@ -28,7 +28,7 @@ async function login_api(type: string, data: object): Promise<object> {
         loginUserInfoStore.setId(resbody.data.id);
         loginUserInfoStore.setToken(resbody.data.token);
         loginUserInfoStore.setCity(resbody.data.city);
-        loginUserInfoStore.setAccount(resbody.data.account);
+        loginUserInfoStore.setemail(resbody.data.email);
         loginUserInfoStore.setProvince(resbody.data.province);
         loginUserInfoStore.setPhoto(resbody.data.photo);
         loginUserInfoStore.setCreateAt(resbody.data.created_at);
@@ -72,7 +72,7 @@ async function tokenLogin_api(token: string): Promise<boolean> {
         loginUserInfoStore.setId(resbody.data.id);
         loginUserInfoStore.setToken(resbody.data.token);
         loginUserInfoStore.setCity(resbody.data.city);
-        loginUserInfoStore.setAccount(resbody.data.account);
+        loginUserInfoStore.setemail(resbody.data.email);
         loginUserInfoStore.setProvince(resbody.data.province);
         loginUserInfoStore.setPhoto(resbody.data.photo);
         loginUserInfoStore.setCreateAt(resbody.data.created_at);

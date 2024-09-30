@@ -62,7 +62,7 @@ import { useRoute } from 'vue-router';
 import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue';
 import V3Emoji from 'vue3-emoji';
 import 'vue3-emoji/dist/style.css';
-import chatFrame from '../chatFrame.vue';
+import chatFrame from './chatFrame.vue';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 import { useloginUserInfoStore } from '../../stores/loginUserInfoStore';
 import { useSocket_api_store } from '../../stores/socket';

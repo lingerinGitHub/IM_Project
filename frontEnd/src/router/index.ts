@@ -23,7 +23,26 @@ const router = createRouter({
                 }
             ]
         },
-
+        {
+            path: '/3D',
+            name: '3D',
+            component: ()=> import('../views/3D.vue')
+        },
+        {
+            path: '/codeTest',
+            name: 'codeTest',
+            component: ()=> import('../views/codeTest.vue')
+        },
+        {
+            path: '/picverify',
+            name: 'picverify',
+            component: ()=> import('../views/picverify.vue')
+        },
+        {
+            path: '/registration',
+            name: 'registration',
+            component: ()=> import('../views/registration.vue')
+        }
     ]
 })
 
@@ -33,6 +52,21 @@ router.beforeEach(async (to, from) => {
 
     // console.log(from.path)
     // console.log(to.path)
+    if(to.path == '/registration'){
+        return
+    }
+    if(to.path == '/picverify'){
+        return
+    }
+    if(to.path == '/codeTest'){
+        return
+    }
+    if(to.path == '/3D'){
+        return
+    }
+    if(to.path == '/test'){
+        return
+    }
 
     if (to.path == '/') {
         // 自动登录

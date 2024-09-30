@@ -4,7 +4,10 @@
             <li v-for="(item, index) in iconfontList" @click="selectFunction(index)" :key="index">
                 <div class="block"></div>
                 <span class="iconfont">
-                    <el-icon class="icon" size="1.5rem" color="#727885">
+                    <el-icon class='icon' :style="{
+                        backgroundColor: item.isSelected ? '#1f87e7' : '#323540',
+                        color: item.isSelected ? '#1f87e7' : '#727885'
+                    }" size="1.5rem">
                         <component :is="item" />
                     </el-icon>
                 </span>
@@ -13,9 +16,7 @@
                 <div class="dot"></div>
                 <div class="userImg">
                     <!-- 用户头像 -->
-                    <el-image style="width: 100%; height: 100%"
-                        :src="props.photoUrl"
-                        fit="cover" />
+                    <el-image style="width: 100%; height: 100%" :src="props.photoUrl" fit="cover" />
                 </div>
             </div>
         </ul>
@@ -33,14 +34,23 @@ const iconfontList = [
 ]
 
 function selectFunction(index: number) {
-    var icons: any | HTMLCollection = document.getElementsByClassName('icon')
-    var blocks: any | HTMLCollection = document.getElementsByClassName('block')
-    for (let i = 0; i < icons.length; i++) {
-        icons[i].style.color = '#727885'
-        blocks[i].style.backgroundColor = '#323540'
+
+    var icons: any = document.querySelectorAll('.icon');
+    var blocks: any = document.querySelectorAll('.block');
+
+    // 重置所有图标的颜色和块的背景色  
+    icons.forEach((icon: any, i: any) => {
+        icon.style.color = '#727885';
+        if (blocks[i]) { // 确保 blocks[i] 存在  
+            blocks[i].style.backgroundColor = '#323540';
+        }
+    });
+
+    // 更改特定索引的图标颜色和块背景色  
+    if (index < icons.length && index < blocks.length) {
+        icons[index].style.color = '#1f87e7';
+        blocks[index].style.backgroundColor = '#1f87e7';
     }
-    icons[index].style.color = '#1f87e7'
-    blocks[index].style.backgroundColor = '#1f87e7'
 }
 </script>
 
@@ -106,9 +116,8 @@ function selectFunction(index: number) {
         .userInfo {
             position: relative;
             padding: 0;
-            margin-top: 180px;
-            margin-left: 22%;
-            margin-right: 10px;
+            padding-top: 80%;
+            margin: auto;
             flex-shrink: 1;
             width: 60px;
             height: 60px;
@@ -128,7 +137,7 @@ function selectFunction(index: number) {
                 position: absolute;
                 z-index: 2;
                 right: 8%;
-                top: 2%;
+                margin-top: 0%;
                 height: 10px;
                 width: 10px;
                 flex-shrink: 1;

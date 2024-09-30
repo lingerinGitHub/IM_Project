@@ -1,8 +1,12 @@
 import { resBody } from '../class/resBody';
 import axiosInstance from '../utils/axiosInterceptorConfig';
 
+interface responseBody {
+    status:number,
+    data: any
+}
 //输入参数：请求类型，url地址，数据，返回json{status,data}
-export async function axiosPost(type:string, url:string, data:object): Promise<any> {
+export async function axiosPost(type:string, url:string, data:object): Promise<responseBody> {
 
     const resbody = new resBody(type, data)
     return await axiosInstance.axiosInstance.post(url, { data: resbody.getData() },

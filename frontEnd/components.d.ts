@@ -7,13 +7,17 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    ChatFrame: typeof import('./src/components/chatFrame.vue')['default']
+    ChatFrame: typeof import('./src/components/chat-components/chatFrame.vue')['default']
     ChatInterface: typeof import('./src/components/chat-components/chatInterface.vue')['default']
     ChatList: typeof import('./src/components/chat-components/chatList.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElDialog: typeof import('element-plus/es')['ElDialog']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
+    ElRadio: typeof import('element-plus/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    IdentifyCode: typeof import('./src/components/util-components/identifyCode.vue')['default']
     Nav: typeof import('./src/components/chat-components/nav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

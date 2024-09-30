@@ -1,12 +1,12 @@
 <template>
-    <!-- <div v-if="account == ''"><RouterView></RouterView></div> -->
+    <!-- <div v-if="email == ''"><RouterView></RouterView></div> -->
     <div class="body" >
         <div class="flex-container" >
             <div class="nav-menu-list" style="flex-grow:0">
                 <Nav :photoUrl="photo"></Nav>
             </div>
             <div class="nav-chat-list" style="flex-grow:0; background-color: #fff;">
-                <ChatList :friendList="friendList" :account="account"></ChatList>
+                <ChatList :friendList="friendList" :email="email"></ChatList>
             </div>
             <div class="chat-interface" style="flex-grow:0">
                 <!-- <chatInterface></chatInterface> -->
@@ -25,7 +25,7 @@ import { useloginUserInfoStore } from '../stores/loginUserInfoStore';
 import { storeToRefs } from 'pinia';
 import { RouterView } from 'vue-router'
 const loginUserInfoStore = useloginUserInfoStore()
-const { friendList,account, photo } = storeToRefs(loginUserInfoStore)
+const { friendList,email, photo } = storeToRefs(loginUserInfoStore)
 </script>
 
 <style lang="scss" scoped>
