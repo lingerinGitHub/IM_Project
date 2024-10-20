@@ -115,7 +115,7 @@ async function login(username: string, password: string) {
                 openFullScreen2()
                 ElNotification({
                     title: 'Success',
-                    message: `登录成功啦,${result.data.email}牢弟`,
+                    message: `登录成功啦,${result.data.username}牢弟`,
                     type: 'success',
                     duration: 2500,
                     offset: 50,
@@ -245,7 +245,7 @@ async function verifySuccess(loading:any) {
     const response:any = await register_api(registerData)
     if(response.status != 200){
         loading.close();
-        notificationEmits(notificationType.error,'出错了','请联系管理员')
+        notificationEmits(notificationType.error,'错误','该邮箱已注册')
     } else {
         loading.close();
         regUsername.value = '';

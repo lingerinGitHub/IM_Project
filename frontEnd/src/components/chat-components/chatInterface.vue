@@ -28,7 +28,7 @@
         </div>
         <div class="chat-container">
             <div ref="chatInfo" id="chat-infos" class="chat-infos">
-                <button id="backToBottomBtn" @click="scrollToBottom()">返回底部</button>
+                <button id="backToBottomBtn" @click="scrollToBottom()">{{ chatInfoStore.chatInfoList[currentId] == undefined ?  "快来开始聊天吧":"返回底部" }}</button>
                 <chatFrame v-for="(item, index) in chatInfoStore.chatInfoList[currentId]" :index="index"
                     :role="item.role" :message="item.message" :photoUrl="item.role == 'user' ? photo : imgUrl">
                 </chatFrame>
@@ -79,6 +79,8 @@ const iconfontList = [
     VideoCamera,
     ChatDotRound,
 ]
+
+
 // 最新的聊天记录
 const currentMessage = ref<string>('')
 const chatInfo = ref<any>()
@@ -150,6 +152,7 @@ function scrollToBottom() {
 
 
 watch(() => route.params.id, (newId, oldId) => {
+
     // 对路由变化做出响应...
     if (oldId == newId) {
         scrollToBottom()
@@ -161,10 +164,12 @@ watch(() => route.params.id, (newId, oldId) => {
         newId = newId.split(':');
     }
     currentId.value = Number(newId[1])
+
     friendInfo = friendList.find((item) => {
 
         return item.id == Number(currentId.value)
     })
+
     // 动态路由匹配时生命周期钩子不会调用
     imgUrl.value = 'http://localhost:8000/static?name=' + friendInfo.photo
     currentMessage.value = chatInfoStore.chatInfoList[currentId.value] == undefined ? '暂无聊天记录' : chatInfoStore.chatInfoList[currentId.value][chatInfoStore.chatInfoList[currentId.value].length - 1].message;

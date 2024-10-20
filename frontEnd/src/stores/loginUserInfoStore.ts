@@ -41,6 +41,7 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
             id: undefined as unknown as number,
             email: String(''),
             photo: String(''),
+            name: String(''),
             province: String(''),
             city: String(''),
             socketID: String(''),
@@ -71,6 +72,9 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
         },
         setemail(email: string) {
             this.email = email;
+        },
+        setName(name: string) {
+            this.name = name;
         },
         setPhoto(photo: string) {
             this.photo = (`http://${serverpath}/static?name=${photo}`);

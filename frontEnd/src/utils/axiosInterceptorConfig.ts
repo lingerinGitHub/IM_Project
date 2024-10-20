@@ -19,14 +19,16 @@ let loadingInstance = null;//先声明变量，防止报错
 //     type: 'customType', // 添加自定义属性
 //   };
 
-
+function getToken() {
+	return  localStorage.getItem('token')
+}
 
 //request拦截器
 axiosInstance.interceptors.request.use(
     (config: any) => {
-        // if (getToken()) {
-        //     config.headers['Authorization'] = getToken() //让每个请求携带自定义的token，请根据实际情况自行修改
-        // }
+        if (getToken()) {
+            config.headers['Authorization'] = getToken() //让每个请求携带自定义的token，请根据实际情况自行修改
+        }
 		// console.log(config)
 		// console.log('该请求经过了请求拦截器')
         // config.headers['Content-Type'] = 'application/json'这里默认type为json了
@@ -57,17 +59,8 @@ axiosInstance.interceptors.response.use(
         // console.log('该响应经过了响应拦截器')
 		const code = response.status
 		if(code<200 ||code>300){
-			// Notification.error({
-			// 	title:response.message	
-			// })
-			if(loadingInstance){
-				// loadingInstance.close();
-			}
 			return Promise.reject('error')
 		}else{
-			if(loadingInstance){
-				// loadingInstance.close();
-			}
 			//如果相应无异常,则检查是否需要保存token
 			if(response?.data && response?.data?.data?.token){
 				console.log('response.data.data.token: '+response.data.data.token)

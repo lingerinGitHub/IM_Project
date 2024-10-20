@@ -8,10 +8,10 @@
                 <el-popover placement="bottom" title="请输入好友名" trigger="click"
                     popper-style="width:30%;max-height:60vh;overflow:auto;"
                     content="this is content, this is content, this is content">
-                    <el-input v-model="searchFriendName" style="width: 100%" placeholder="Please input" size="small"
+                    <el-input v-model="searchFriendname" style="width: 100%" placeholder="Please input" size="small"
                         class="input-with-select">
                         <template #prepend style="width: 20%;">
-                            <el-button :icon="Search" />
+                            <el-button :icon="Search" @click="searchFriend(searchFriendname)" />
                         </template>
                     </el-input>
                     <template #reference>
@@ -28,101 +28,121 @@
                         </div>
                     </template>
                     <div class=" pt-2 flex flex-wrap gap-2">
-                        <div @click="addFriend(1)">
-                            <friendFrame name="sddsfdfdccsdf" from="广东中山"
-                                photoUrl="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                                id="1"></friendFrame>
-                        </div>
+                        <!-- 好友列表s -->
+                        <div v-for="(item, index) in userList" :key="index" @click="addFriend(item.id)">
+                            <friendFrame :name="item.username" :from="item.province + item.city"
+                                :photoUrl="item.photo == '0' ? `http://${serverpath}/static?name=` + item.photo : `http://${serverpath}/static?name=1.jpg`"
+                                :id="item.id">
 
-                        <friendFrame name="张三1s" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三dddd" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三sdfsdf" from="广东中山" photoUrl="" id="1"></friendFrame>
+                            </friendFrame>
+                        </div>
                     </div>
 
                 </el-popover>
-
             </span>
         </div>
-        <div class="chat-list">
-            <TransitionGroup v-draggable="[props.friendList, { animation: 150, onUpdate, onStart, }]" type="transition"
-                tag="ul" name="fade" id="anchor" class="chat-list">
-                <li v-for="(item, index) in props.friendList" :key="item.id"
-                    :class="`${selectChatId == item.id ? 'selectedChat chatItem' : 'chatItem'} `"
-                    :id="`${selectChatId == item.id ? 'selectedChat chatItem' : 'chatItem'} `"
-                    @click="selectChat(index, item.id)">
-                    <div class="userInfo">
-                        <div class="dot"></div>
-                        <div class="userImg">
-                            <!-- 用户头像 -->
-                            <el-image style="width: 100%; height: 100%"
-                                :src="'http://localhost:8000/static?name=' + item.photo" fit="cover" />
-                        </div>
-                    </div>
-                    <div class="info">
-                        <span class="name">{{ item.username }}</span>
-                        <span class="message">{{ chatInfoStore.chatInfoList[item.id] == undefined ? '暂无聊天记录' :
-                            chatInfoStore.chatInfoList[item.id][chatInfoStore.chatInfoList[item.id].length - 1].message
-                            }}</span>
-                    </div>
-                </li>
-            </TransitionGroup>
-            <preview-list :list="props.friendList" />
-            <!-- <button id="backToTopBtn" @click="scrollToTop()">返回顶部</button> -->
-        </div>
+        <!-- 其他功能区 -->
+        <slot name="panel"></slot>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { vDraggable } from 'vue-draggable-plus'
-import router from '../../router/index.ts';
-import { usechatInfoStore } from '../../stores/chatInfoStore';
+import { reactive, ref } from 'vue'
+// import router from '../../router';
 import { Plus, Search } from '@element-plus/icons-vue';
 import friendFrame from './friendFrame.vue'
+import { serverpath } from '../../config/serverPath';
+import { addFriend_api, searchFriend_api } from '../../api/friend_api';
+import { ElNotification } from 'element-plus';
+import { useloginUserInfoStore } from '../../stores/loginUserInfoStore';
+import { storeToRefs } from 'pinia';
 
-const chatInfoStore = usechatInfoStore()
-var props = defineProps(['friendList', 'email', 'name']); //父传子数组|对象写法都可以
-const selectChatId = ref<number>(0);
-const searchFriendName = ref<string>('')
+const loginUserInfoStore = useloginUserInfoStore()
+const { friendList } = storeToRefs(loginUserInfoStore)
 
+var props = defineProps(['friendList', 'email', 'name', 'id', 'test']); //父传子数组|对象写法都可以
+const searchFriendname = ref<string>('')
 
-function onUpdate() {
-    // logger.info('onUpdate')
+interface userItem {
+    id: number,
+    username: string,
+    province: string,
+    city: string,
+    photo: string
 }
-function onStart() {
-    // logger.info('onStart')
-}
+const userList: userItem[] = reactive([]);
 
 
-//选择的聊天
-function selectChat(index: number, id: number) {
-    //跳转路由到当前用户
-    router.push({ path: `chatpage:${id}` })
-    selectChatId.value = id;
-    var tempListItem = props.friendList[index]
-    props.friendList.splice(index, 1)
-    props.friendList.unshift(tempListItem)
-    scrollToTop()
+// 查找用户
+var currentName = ''
+async function searchFriend(searchUsername: string) {
+
+    if (searchUsername == '' && currentName == searchUsername) {
+        return
+    } else {
+        currentName = searchUsername
+    }
+
+    const searchResult = await searchFriend_api(props.id, searchUsername)
+
+    userList.splice(0, userList.length)
+
+    for (let i = 0; i < searchResult.length; i++) {
+        userList.push(searchResult[i] as userItem)
+    }
 }
+
 
 // 添加好友
-function addFriend(friendId:number) {
-    console.log(friendId)
+async function addFriend(friendid: number) {
+
+    if (friendid == props.id) {
+        notificationEmits(notificationType.error, '失败', '请不要添加自己为好友')
+        return
+    }
+    
+    let ifAccept = false
+    for(let i=0; i<friendList.value.length; i++) {
+        if(friendList.value[i].id == friendid) {
+            ifAccept = true;
+            break;
+        }
+    }
+    if(ifAccept) {
+        notificationEmits(notificationType.error, '失败', '已添加为好友')
+        return
+    }
+
+    console.log('用户id：' + props.id + ' 好友id：' + friendid)
+    const addResult = await addFriend_api(props.id, friendid)
+    if (addResult.status == 200) {
+        notificationEmits(notificationType.success, '成功', '请求发送成功')
+    } else {
+        notificationEmits(notificationType.error, '失败', '请求已发送，请内心等待')
+    }
+
 }
 
 
-//返回顶部
-function scrollToTop() {
-
-    const anchor: HTMLElement | any = document.getElementById('anchor')
-    anchor.scroll({ top: 0, behavior: "smooth" });
-
+enum notificationType {
+    success = 'success',
+    warning = 'warning',
+    info = 'info',
+    error = 'error'
 }
+//弹窗
+function notificationEmits(type: notificationType, title: string, message: string) {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+        duration: 2500,
+        offset: 50,
+    })
+}
+
 </script>
+
 <style>
 friendFrame {
     padding: 100px;
@@ -145,7 +165,7 @@ friendFrame {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
     background-color: #323540;
 
     .h2 {

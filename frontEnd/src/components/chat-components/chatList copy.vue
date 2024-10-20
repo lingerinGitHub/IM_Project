@@ -1,52 +1,7 @@
 <template>
     <div class="list-container">
         <h2 class="h2">{{ props.name }}聊天室</h2>
-        <div class="h3">
-            <span>聊天列表</span>
-            <span class="add">
-                <!-- 组件1 -->
-                <el-popover placement="bottom" title="请输入好友名" trigger="click"
-                    popper-style="width:30%;max-height:60vh;overflow:auto;"
-                    content="this is content, this is content, this is content">
-                    <el-input v-model="searchFriendName" style="width: 100%" placeholder="Please input" size="small"
-                        class="input-with-select">
-                        <template #prepend style="width: 20%;">
-                            <el-button :icon="Search" />
-                        </template>
-                    </el-input>
-                    <template #reference>
-                        <div>
-                            <!-- 组件2 -->
-                            <el-tooltip class="box-item" effect="light" content="点击添加好友" placement="top-end">
-                                <el-icon class='icon' :style="{
-                                    // backgroundColor:  '#1f87e7',
-                                    color: '#8d8f80',
-                                }" size="1.2rem">
-                                    <component :is="Plus" />
-                                </el-icon>
-                            </el-tooltip>
-                        </div>
-                    </template>
-                    <div class=" pt-2 flex flex-wrap gap-2">
-                        <div @click="addFriend(1)">
-                            <friendFrame name="sddsfdfdccsdf" from="广东中山"
-                                photoUrl="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                                id="1"></friendFrame>
-                        </div>
-
-                        <friendFrame name="张三1s" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三dddd" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三sdfsdf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                    </div>
-
-                </el-popover>
-
-            </span>
-        </div>
+        <h3 class="h3">聊天列表</h3>
         <div class="chat-list">
             <TransitionGroup v-draggable="[props.friendList, { animation: 150, onUpdate, onStart, }]" type="transition"
                 tag="ul" name="fade" id="anchor" class="chat-list">
@@ -81,14 +36,9 @@ import { ref } from 'vue'
 import { vDraggable } from 'vue-draggable-plus'
 import router from '../../router/index.ts';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
-import { Plus, Search } from '@element-plus/icons-vue';
-import friendFrame from './friendFrame.vue'
-
 const chatInfoStore = usechatInfoStore()
-var props = defineProps(['friendList', 'email', 'name']); //父传子数组|对象写法都可以
+var props = defineProps(['friendList', 'email','name']); //父传子数组|对象写法都可以
 const selectChatId = ref<number>(0);
-const searchFriendName = ref<string>('')
-
 
 function onUpdate() {
     // logger.info('onUpdate')
@@ -109,11 +59,6 @@ function selectChat(index: number, id: number) {
     scrollToTop()
 }
 
-// 添加好友
-function addFriend(friendId:number) {
-    console.log(friendId)
-}
-
 
 //返回顶部
 function scrollToTop() {
@@ -123,21 +68,6 @@ function scrollToTop() {
 
 }
 </script>
-<style>
-friendFrame {
-    padding: 100px;
-}
-
-.popover {
-    height: 500px;
-    background-color: pink;
-}
-
-::v-deep .el-popper {
-    height: 500px;
-    background-color: pink;
-}
-</style>
 
 <style lang="scss" scoped>
 .list-container {
@@ -163,20 +93,6 @@ friendFrame {
         margin-top: 20%;
         margin-bottom: 5%;
         color: #8d8f97;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .add {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            padding-right: 8%;
-
-            .popover {
-                height: 500px
-            }
-        }
     }
 
     .chat-list {

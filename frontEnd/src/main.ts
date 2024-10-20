@@ -14,7 +14,8 @@ import "element-plus/theme-chalk/el-message.css";
 import "element-plus/theme-chalk/el-notification.css";
 import "element-plus/theme-chalk/el-message-box.css";
 import V3Emoji from 'vue3-emoji'
-
+// 引入全局样式
+import "./style.css"
 
 const app = createApp(App)
 app.use(V3Emoji)

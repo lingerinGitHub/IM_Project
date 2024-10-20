@@ -2,7 +2,7 @@
     <div class="nav-container">
         <ul class="menu-list">
             <li v-for="(item, index) in iconfontList" @click="selectFunction(index)" :key="index">
-                <div class="block"></div>
+                <span class="block"></span>
                 <span class="iconfont">
                     <el-icon class='icon' :style="{
                         backgroundColor: item.isSelected ? '#1f87e7' : '#323540',
@@ -24,22 +24,61 @@
 </template>
 
 <script lang="ts" setup>
-import { ChatDotRound, Setting, More, VideoCamera } from '@element-plus/icons-vue';
+import { ChatDotRound, Setting, More, VideoCamera, Files } from '@element-plus/icons-vue';
+import { watch, nextTick, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import router from '../../router/index.ts';
+import { defineEmits } from 'vue'
+import { ElNotification } from 'element-plus';
+//声明从父组件中传递的方法
+const emit = defineEmits(['getFriendStatus'])
+
+const route = useRoute();
 var props = defineProps(['photoUrl']);
 const iconfontList = [
     ChatDotRound,
+    Files,
     VideoCamera,
     More,
     Setting,
 ]
 
+
+var currendAction = -1;
 function selectFunction(index: number) {
 
+    if (currendAction == index) {
+        return
+    } else if(index < 2) {
+        currendAction = index
+    } else {
+        notificationEmits(notificationType.warning, '警告', '该功能正在开发中')
+        return
+    }
     var icons: any = document.querySelectorAll('.icon');
     var blocks: any = document.querySelectorAll('.block');
 
+    console.log(`选择了${index}`)
+
+    switch (index) {
+        case 0:
+            router.push({ path: '/chat' })
+            console.log('跳转至/chat')
+            break;
+        case 1:
+            emit('getFriendStatus')
+            router.push({ path: '/chat/friendActionPanel' })
+            console.log('跳转至/friendActionPanel')
+            break;
+        default:
+            
+            break;
+    }
+
+
+
     // 重置所有图标的颜色和块的背景色  
-    icons.forEach((icon: any, i: any) => {
+    icons.forEach((icon: any, i: number) => {
         icon.style.color = '#727885';
         if (blocks[i]) { // 确保 blocks[i] 存在  
             blocks[i].style.backgroundColor = '#323540';
@@ -52,6 +91,38 @@ function selectFunction(index: number) {
         blocks[index].style.backgroundColor = '#1f87e7';
     }
 }
+
+enum notificationType {
+    success = 'success',
+    warning = 'warning',
+    info = 'info',
+    error = 'error'
+}
+//弹窗
+function notificationEmits(type: notificationType, title: string, message: string) {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+        duration: 2500,
+        offset: 50,
+    })
+}
+
+watch(() => route.path, async (currentPath) => {
+    await nextTick();
+    console.log(currentPath)
+    switch (currentPath) {
+        case '/chat':
+            selectFunction(0);
+            break;
+
+    }
+}, { immediate: true })
+
+onMounted(() => {
+    selectFunction(0)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -97,8 +168,8 @@ function selectFunction(index: number) {
             }
 
             .block {
-                display: inline-block;
-                flex-shrink: 1;
+                // display: inline-block;
+                // flex-shrink: 1;
                 height: 1.5rem;
                 width: 7%;
                 // background-color: #fff;
@@ -129,7 +200,7 @@ function selectFunction(index: number) {
                 height: 60px;
                 flex-shrink: 1;
                 flex: 1;
-                background-color: pink;
+                background-color: #f5f5f5;
                 clip-path: circle(50% at 50% 50%);
             }
 

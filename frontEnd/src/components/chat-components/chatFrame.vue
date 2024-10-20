@@ -19,12 +19,14 @@ const props = defineProps({
     // time?: String, // 是可选项，可以不填充
 });
 
+console.log(props)
+
 const chatframe = ref(null) as any;
 const talkbubble = ref(null) as any;
 const container = ref(null) as any;
 
 onMounted(() => {
-    console.log(talkbubble.value.offsetHeight)
+    // console.log(talkbubble.value.offsetHeight)
     const height = talkbubble.value.offsetHeight;
     // console.log(height)
     container.value.style.height = (height + 20) + 'px';
@@ -69,6 +71,8 @@ onMounted(() => {
         height: auto;
         background: #1f87e7;
         border-radius: 10px;
+        //正常显示空格
+        white-space: pre;
 
         &::before {
             content: "";
@@ -119,6 +123,8 @@ onMounted(() => {
         border-radius: 10px;
         background: #f5f5f5;
         border-radius: 10px;
+        // 正常显示空格
+        white-space: pre;
 
         &::before {
             content: "";

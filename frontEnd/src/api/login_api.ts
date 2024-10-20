@@ -33,7 +33,7 @@ async function login_api(type: string, data: object): Promise<object> {
         loginUserInfoStore.setPhoto(resbody.data.photo);
         loginUserInfoStore.setCreateAt(resbody.data.created_at);
         loginUserInfoStore.setUpdateAt(resbody.data.updated_at);
-
+        loginUserInfoStore.setName(resbody.data.username)
         //获取用户好友列表
         logger.info(loginUserInfoStore.id)
         const friendListresbody = await getFriendList({
@@ -77,6 +77,7 @@ async function tokenLogin_api(token: string): Promise<boolean> {
         loginUserInfoStore.setPhoto(resbody.data.photo);
         loginUserInfoStore.setCreateAt(resbody.data.created_at);
         loginUserInfoStore.setUpdateAt(resbody.data.updated_at);
+        loginUserInfoStore.setName(resbody.data.username)
 
         //获取用户好友列表
         logger.info(loginUserInfoStore.id)

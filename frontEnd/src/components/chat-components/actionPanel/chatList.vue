@@ -1,52 +1,5 @@
 <template>
     <div class="list-container">
-        <h2 class="h2">{{ props.name }}聊天室</h2>
-        <div class="h3">
-            <span>聊天列表</span>
-            <span class="add">
-                <!-- 组件1 -->
-                <el-popover placement="bottom" title="请输入好友名" trigger="click"
-                    popper-style="width:30%;max-height:60vh;overflow:auto;"
-                    content="this is content, this is content, this is content">
-                    <el-input v-model="searchFriendName" style="width: 100%" placeholder="Please input" size="small"
-                        class="input-with-select">
-                        <template #prepend style="width: 20%;">
-                            <el-button :icon="Search" />
-                        </template>
-                    </el-input>
-                    <template #reference>
-                        <div>
-                            <!-- 组件2 -->
-                            <el-tooltip class="box-item" effect="light" content="点击添加好友" placement="top-end">
-                                <el-icon class='icon' :style="{
-                                    // backgroundColor:  '#1f87e7',
-                                    color: '#8d8f80',
-                                }" size="1.2rem">
-                                    <component :is="Plus" />
-                                </el-icon>
-                            </el-tooltip>
-                        </div>
-                    </template>
-                    <div class=" pt-2 flex flex-wrap gap-2">
-                        <div @click="addFriend(1)">
-                            <friendFrame name="sddsfdfdccsdf" from="广东中山"
-                                photoUrl="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                                id="1"></friendFrame>
-                        </div>
-
-                        <friendFrame name="张三1s" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三2sfvf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三dddd" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三" from="广东中山" photoUrl="" id="1"></friendFrame>
-                        <friendFrame name="张三sdfsdf" from="广东中山" photoUrl="" id="1"></friendFrame>
-                    </div>
-
-                </el-popover>
-
-            </span>
-        </div>
         <div class="chat-list">
             <TransitionGroup v-draggable="[props.friendList, { animation: 150, onUpdate, onStart, }]" type="transition"
                 tag="ul" name="fade" id="anchor" class="chat-list">
@@ -59,7 +12,7 @@
                         <div class="userImg">
                             <!-- 用户头像 -->
                             <el-image style="width: 100%; height: 100%"
-                                :src="'http://localhost:8000/static?name=' + item.photo" fit="cover" />
+                                :src="`http://${serverpath}/static?name=` + item.photo" fit="cover" />
                         </div>
                     </div>
                     <div class="info">
@@ -79,16 +32,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { vDraggable } from 'vue-draggable-plus'
-import router from '../../router/index.ts';
-import { usechatInfoStore } from '../../stores/chatInfoStore';
-import { Plus, Search } from '@element-plus/icons-vue';
-import friendFrame from './friendFrame.vue'
+import router from '../../../router/index.ts';
+import { usechatInfoStore } from '../../../stores/chatInfoStore';
+import { serverpath } from '../../../config/serverPath.ts';
+
+console.log('chatList即将被渲染')
 
 const chatInfoStore = usechatInfoStore()
-var props = defineProps(['friendList', 'email', 'name']); //父传子数组|对象写法都可以
+var props = defineProps(['friendList']); //父传子数组|对象写法都可以
 const selectChatId = ref<number>(0);
-const searchFriendName = ref<string>('')
-
 
 function onUpdate() {
     // logger.info('onUpdate')
@@ -107,11 +59,6 @@ function selectChat(index: number, id: number) {
     props.friendList.splice(index, 1)
     props.friendList.unshift(tempListItem)
     scrollToTop()
-}
-
-// 添加好友
-function addFriend(friendId:number) {
-    console.log(friendId)
 }
 
 
@@ -148,39 +95,8 @@ friendFrame {
     overflow: hidden;
     background-color: #323540;
 
-    .h2 {
-        height: 10%;
-        font-size: 20px;
-        width: 100%;
-        color: #f5f5f5;
-        margin-top: 5%;
-    }
-
-    .h3 {
-        height: 6%;
-        width: 100%;
-        font-size: 15px;
-        margin-top: 20%;
-        margin-bottom: 5%;
-        color: #8d8f97;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .add {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            padding-right: 8%;
-
-            .popover {
-                height: 500px
-            }
-        }
-    }
-
     .chat-list {
-        height: 92.8%;
+        height: 96%;
         width: 95%;
         margin-right: 5%;
         // padding-right: 5%;
@@ -231,6 +147,7 @@ friendFrame {
             align-items: center;
             // background-color: #9cdcfe;
             height: 13%;
+            max-height: 80px;
             width: 100%;
             padding-right: 2%;
             margin-top: 6%;
