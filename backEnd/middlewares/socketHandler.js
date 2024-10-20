@@ -44,7 +44,7 @@ module.exports = function (io) {
             })
             //连接成功路由返回连接信息
             io.to(socket.id).emit('connected', { status: 200, data: { message: '登陆成功', timeStamp: time.getTimestamp(), socketid: onlineUserList.get(socket.handshake.query.id.toString()).socketid } });//首次链接返回时间戳
-            console.log(`用户:"${socket.handshake.query.id}"连接成功`)
+            console.log(`用户id:"${socket.handshake.query.id}"连接成功`)
         } else {
             console.log('error')
             io.to(socket.id).emit('message:from', { status: 403, data: '登陆过期，请重新登录' });

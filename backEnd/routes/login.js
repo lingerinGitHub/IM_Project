@@ -3,8 +3,7 @@ const { tokenSecret } = require('../common/password.js')
 const { verifyTokenId, generateToken } = require('../utils/jwt_util.js')
 const knex = require('../config/knex_config.js');
 const fs = require('fs');
-const { redis0 } = require('../utils/redis_connect.js');
-const { error } = require('console');
+const { redis0 } = require('../utils/redis_connect.js')
 const { B2BchatidGernerator } = require('../utils/chatidGenerator.js');
 
 router.post('/login', async (ctx, next) => {
@@ -41,6 +40,7 @@ router.post('/login', async (ctx, next) => {
         'id': res[0].id,
         'email': res[0].email,
         'province': res[0].province,
+        'username': res[0].username,
         'city': res[0].city,
         'photo': res[0].photo,
         'created_at': res[0].created_at,
@@ -55,6 +55,7 @@ router.post('/login', async (ctx, next) => {
     });
 })
 
+// 无感登录
 router.post('/tokenSessionLogin', async (ctx, next) => {
     // 对访问的接口参数过滤
     if (ctx.request.body?.data?.token == undefined || ctx?.session?.id == undefined) {
@@ -67,7 +68,7 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
     // 对token和session验证通过则登录成功
     const userData = verifyTokenId(ctx.request.body.data.token)
 
-    if(userData == false){
+    if (userData == false) {
         ctx.status = 500;
         ctx.body = 'token过期！';
     }
@@ -81,7 +82,7 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
             .catch(err => {
                 console.log(err)
                 ctx.status = 500;
-                ctx.body = {data:'服务器异常'}
+                ctx.body = { data: '服务器异常' }
             })
 
 
@@ -94,7 +95,8 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
             'photo': res[0].photo,
             'created_at': res[0].created_at,
             'updated_at': res[0].updated_at,
-            'token': token
+            'token': token,
+            'username': res[0].username
         }
 
         ctx.set("Content-Type", "application/json");
@@ -106,7 +108,7 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
         return
     }
     ctx.status = 500;
-    ctx.body = {data:"非法访问！"};
+    ctx.body = { data: "非法访问！" };
 })
 
 // 测试可删除
@@ -114,20 +116,24 @@ router.get('/getToken', (ctx, next) => {
     ctx.body = generateToken(114514)
 })
 
+// 需要检查cookie是否合法
 router.post('/getFriendList', async function (ctx, next) {
     //检查请求体是否合法
     if (ctx.request?.body?.data?.id === undefined || ctx.request?.data?.body?.id === null) {
-        ctx.body = '想非法访问？'
+        ctx.ctx = 502
         return
     }
     // 第一个查询部分
     const query1 = knex('friendships as f')
-        .select('f.friend_id as friend_user_id')
-        .where('f.user_id', ctx.request.body.data.id);
+        .select('f.friend_id as friend_user_id', 'f.user_id')
+        .where({
+            'f.user_id': ctx.request.body.data.id,
+            'f.status': 'accepted'
+        });
 
     // 第二个查询部分
     const query2 = knex('friendships as f')
-        .select('f.user_id')
+        .select('f.friend_id', 'f.user_id as friend_user_id')
         .where({
             'f.friend_id': ctx.request.body.data.id,
             'f.status': 'accepted'
@@ -136,8 +142,42 @@ router.post('/getFriendList', async function (ctx, next) {
     // 使用union将两个查询合并,联合查询
     const friendInfos = await knex.union(knex.raw(query1.toString()), knex.raw(query2.toString()))
         .then(async results => {
+            console.log(results)
+
+            let fast = 0;
+            let matchResult = []
+
+            for (let j = 0; j < results.length; j++) {
+                if (results[j].friend_user_id != ctx.request.body.data.id) {
+                    continue
+                } else {
+                    fast = j;
+                    break;
+                }
+            }
+
+
+            while (fast < results.length && fast > 0) {
+
+                for (let i = fast; i < results.length; i++) {
+
+                    if (results[0].friend_user_id == results[i].user_id) {
+
+                        matchResult.push(results[0])
+                        results.splice(i, 1)
+                        break;
+
+                    }
+                }
+
+                fast--;
+                results.splice(0, 1);
+            }
+
+
+
             // 处理结果
-            const friendInfosPromises = results.map(async results => {
+            const friendInfosPromises = matchResult.map(async results => {
                 const friendInfoPromise = await knex.select(
                     'id', 'username', 'province', 'city', 'photo', 'updated_at'
                 ).from('users').where({

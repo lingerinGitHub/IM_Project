@@ -32,7 +32,7 @@ router.post('/register', async (ctx, next) => {
             .then(function (row) { return row != undefined })    
         if(result){
             ctx.status = 502
-            ctx.body = '该邮箱已被注册'
+            ctx.body = {data:'该邮箱已被注册',status:502}
             return
         }
     }

@@ -9,6 +9,7 @@ const onerror = require('koa-onerror')
 // const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const testRouter = require('./routes/testRouter')
+const friend = require('./routes/friend')
 const resource = require('./routes/resource')
 const crosConfig = require('./config/crosConfig.js')
 const cors = require('koa2-cors')
@@ -84,7 +85,7 @@ app.use(views(__dirname + '/views', {
   extension: 'ejs'
 }))
 
-// logger
+// logger记录日志
 app.use(async (ctx, next) => {
   const start = new Date()
   await next()
@@ -111,9 +112,14 @@ app.use(login.routes(), login.allowedMethods())
 app.use(resource.routes(), resource.allowedMethods())
 app.use(testRouter.routes(), testRouter.allowedMethods())
 app.use(register.routes(), register.allowedMethods())
+//接下来的路由检查cookie是否含有内容
+app.use(async (ctx,next)=>{
+  console.log('中间件:检测cookie内容')
+  console.log(ctx.session.id)
+  await next()
+})
 
-// app.use(chat.routes(), chat.allowedMethods())
-// app.use(users.routes(), users.allowedMethods())
+app.use(friend.routes(), friend.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
