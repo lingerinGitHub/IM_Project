@@ -15,7 +15,7 @@
 游客密码：visitor
 如果浏览过程中返回到login页面，说明被顶号了hh
 
-admin是管理员账号，欢迎与我畅聊！
+admin\user1是我的账号，欢迎与我畅聊！
 
 ps：还没设置登出（懒），退出登录访问www.greenworld.icu/login即可
 
