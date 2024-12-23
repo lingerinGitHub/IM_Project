@@ -31,7 +31,7 @@ import { reactive, ref } from 'vue';
 import { login_api } from '../api/login_api.ts'
 import { ElNotification, ElLoading } from 'element-plus'
 import { useRouter } from 'vue-router';
-import jigsaw from '../utils/jigsaw.js';
+// import jigsaw from '../utils/jigsaw.js';
 const router = useRouter()//路由实例化
 const photourl = ref('../../public/壁纸_compressed.JPG');
 const url = ref('../../public/壁纸_compressed.JPG');

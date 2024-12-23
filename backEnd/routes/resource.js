@@ -6,6 +6,11 @@ const router = require('koa-router')()
 router.get('/static', async (ctx) => {
     // console.log(`请求的图片地址为： ${ctx.url}`)
     // console.log(`请求的图片为： ${ctx.query.name}`)
+    if(ctx.query.name == undefined || ctx.query.name == '' || ctx.query.name == null){
+        ctx.body = 'error'
+        ctx.status = 500
+        return 
+    }
     let filePath = getImagePath(ctx.query.name); //图片地址
     // console.log(filePath)
     let file = null;

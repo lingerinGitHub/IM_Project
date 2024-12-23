@@ -8,7 +8,11 @@ interface responseBody {
 //输入参数：请求类型，url地址，数据，返回json{status,data}
 export async function axiosPost(type:string, url:string, data:object): Promise<responseBody> {
 
+
     const resbody = new resBody(type, data)
+
+    console.log(resbody.getData())
+
     return await axiosInstance.axiosInstance.post(url, { data: resbody.getData() },
         {
             headers: {

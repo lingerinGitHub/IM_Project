@@ -9,7 +9,7 @@ interface registerData {
 }
 async function register_api(data:registerData): Promise<object>{
     const resbody = new resBody('json',data)
-    const result =  await axiosPost(resbody.type as string, `http://${serverpath}/register`, resbody.data)
+    const result =  await axiosPost(resbody.type as string, `${serverpath}/users/register`, resbody.data)
     return result
 }
 

@@ -10,7 +10,7 @@ let axiosInstance = axios.create({
 });
 
 // 在相应之前中断系统操作
-let loadingInstance = null;//先声明变量，防止报错
+//let loadingInstance = null;//先声明变量，防止报错
 
 // 这个接口是用来规范请求的格式，type是区分请求类型，loading是是否需要loading
 // const config: CustomAxiosRequestConfig = {

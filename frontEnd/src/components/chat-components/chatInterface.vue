@@ -66,6 +66,7 @@ import chatFrame from './chatFrame.vue';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
 import { useloginUserInfoStore } from '../../stores/loginUserInfoStore';
 import { useSocket_api_store } from '../../stores/socket';
+import { serverpath } from '../../config/serverPath.ts'
 const socket_api_store = useSocket_api_store()
 const chatInfoStore = usechatInfoStore()
 const { friendList, photo } = useloginUserInfoStore()
@@ -171,7 +172,7 @@ watch(() => route.params.id, (newId, oldId) => {
     })
 
     // 动态路由匹配时生命周期钩子不会调用
-    imgUrl.value = 'http://localhost:8000/static?name=' + friendInfo.photo
+    imgUrl.value = `${serverpath}/static?name=` + friendInfo.photo
     currentMessage.value = chatInfoStore.chatInfoList[currentId.value] == undefined ? '暂无聊天记录' : chatInfoStore.chatInfoList[currentId.value][chatInfoStore.chatInfoList[currentId.value].length - 1].message;
 }, { immediate: true, deep: true })
 
@@ -258,6 +259,7 @@ onMounted(() => {
                 flex-direction: column;
                 justify-content: center;
                 height: 100%;
+                width: 65%;
                 margin-left: -8%;
 
                 // width:auto;
@@ -271,6 +273,16 @@ onMounted(() => {
 
                 .message {
                     font-size: 100%;
+                    /* 防止文本换行 */
+                    // white-space: nowrap;
+
+                    /* 当内容超出容器时隐藏超出部分 */
+                    overflow: hidden;
+
+                    /* 使用省略号表示被截断的文本 */
+                    text-overflow: ellipsis;
+                    // max-width: 30%;
+                    max-width: 100%;
                     color: #8d8f97;
                 }
             }

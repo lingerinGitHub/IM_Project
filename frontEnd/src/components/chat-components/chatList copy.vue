@@ -14,7 +14,7 @@
                         <div class="userImg">
                             <!-- 用户头像 -->
                             <el-image style="width: 100%; height: 100%"
-                                :src="'http://localhost:8000/static?name=' + item.photo" fit="cover" />
+                                :src="`${serverpath}item.photo`" fit="cover" />
                         </div>
                     </div>
                     <div class="info">
@@ -36,6 +36,7 @@ import { ref } from 'vue'
 import { vDraggable } from 'vue-draggable-plus'
 import router from '../../router/index.ts';
 import { usechatInfoStore } from '../../stores/chatInfoStore';
+import { serverpath } from '../../config/serverPath.ts'
 const chatInfoStore = usechatInfoStore()
 var props = defineProps(['friendList', 'email','name']); //父传子数组|对象写法都可以
 const selectChatId = ref<number>(0);

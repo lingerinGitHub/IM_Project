@@ -87,7 +87,7 @@ module.exports = function sessionHandler(app, keys) {
     async function compareTime(ctx) {
         const now = time.getTimestamp();
         // 如session.time不存在则返回0
-        console.log(`用户:"${ctx.session.id}"访问次数： ${ctx.session.count} + ${ctx.sessionId}`)
+        console.log(`用户:"${ctx.session.id}" ip: ${getClientIpAddress(ctx)} 访问次数： ${ctx.session.count} + ${ctx.sessionId}`)
         if (!ctx.session.time) {
             ctx.session.time = time.getTimestamp();
             // 访问次数
@@ -101,3 +101,20 @@ module.exports = function sessionHandler(app, keys) {
         }
     }
 };
+
+// 获取客户端ip地址
+const getClientIpAddress = (ctx) => {
+
+    const headers = ctx.headers
+
+    if (headers['x-forwarded-for']) {
+
+        const ipList = headers['x-forwarded-for'].split(',')
+
+        return ipList[0]
+
+    }
+
+    return '0.0.0.0'
+
+}

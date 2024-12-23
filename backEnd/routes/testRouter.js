@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 const koajwt = require('koa-jwt')
+const io = require()
 
 
 router.get('sessionTest', async (ctx, next)=>{
@@ -20,8 +21,6 @@ router.get('/get', async (ctx, next) => {
 
 
 router.get('/token', async (ctx, next) => {
-  console.log(ctx.state)
-  console.log(ctx.state.user.iat)
   console.log(Date.now())
 })
 

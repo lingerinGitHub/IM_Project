@@ -14,7 +14,7 @@ export const usefriendStatusStore = defineStore('usefriendStatusStore', {
     actions: {
         async getFriendStatus(userid:number) {
             
-            const friendStatusClassification = await axiosPost('json',`http://${serverpath}/friend/status`, {"userid":userid})
+            const friendStatusClassification = await axiosPost('json',`${serverpath}/users/friends/status`, {"userid":userid})
             this.friendStatusClassification = friendStatusClassification.data
             return friendStatusClassification.data
 

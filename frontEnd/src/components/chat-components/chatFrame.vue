@@ -19,7 +19,6 @@ const props = defineProps({
     // time?: String, // 是可选项，可以不填充
 });
 
-console.log(props)
 
 const chatframe = ref(null) as any;
 const talkbubble = ref(null) as any;
@@ -41,6 +40,7 @@ onMounted(() => {
     float: left;
     position: relative;
     min-height: 70px;
+    height: auto;
     width: 100%;
     // background-color: pink;
 
@@ -71,8 +71,10 @@ onMounted(() => {
         height: auto;
         background: #1f87e7;
         border-radius: 10px;
-        //正常显示空格
-        white-space: pre;
+        /* 允许在长单词或URL内部进行换行 */
+        word-wrap: break-word; 
+        /* 保留空格，允许换行 */
+        white-space: pre-wrap; 
 
         &::before {
             content: "";

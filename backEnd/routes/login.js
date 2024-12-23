@@ -6,7 +6,10 @@ const fs = require('fs');
 const { redis0 } = require('../utils/redis_connect.js')
 const { B2BchatidGernerator } = require('../utils/chatidGenerator.js');
 
+router.prefix('/users')
+
 router.post('/login', async (ctx, next) => {
+    // console.log(ctx.request.body)
     //判断请求体是否正确，字段是否存在
     if (ctx.request.body?.data?.email == undefined || ctx.request.body?.data?.password == undefined) {
         ctx.status = 500;
@@ -70,7 +73,9 @@ router.post('/tokenSessionLogin', async (ctx, next) => {
 
     if (userData == false) {
         ctx.status = 500;
-        ctx.body = 'token过期！';
+        ctx.body = 'error';
+
+        return
     }
 
     if (userData.data.id == ctx.session.id) {
@@ -123,6 +128,7 @@ router.post('/getFriendList', async function (ctx, next) {
         ctx.ctx = 502
         return
     }
+    
     // 第一个查询部分
     const query1 = knex('friendships as f')
         .select('f.friend_id as friend_user_id', 'f.user_id')
@@ -142,7 +148,7 @@ router.post('/getFriendList', async function (ctx, next) {
     // 使用union将两个查询合并,联合查询
     const friendInfos = await knex.union(knex.raw(query1.toString()), knex.raw(query2.toString()))
         .then(async results => {
-            console.log(results)
+            // console.log(results)
 
             let fast = 0;
             let matchResult = []
@@ -204,7 +210,11 @@ router.post('/getFriendList', async function (ctx, next) {
 })
 
 router.get('/getHistory', async function (ctx, next) {
-    const B2BHistoryLuaOld = fs.readFileSync(__dirname + '\\..\\lua\\B2BHistoryOld.lua', 'utf-8');
+
+    ctx.status = 500
+    return 
+
+    const B2BHistoryLuaOld = fs.readFileSync(path.join(__dirname, '..', 'lua', 'B2BHistoryOld.lua'), 'utf-8');
     const luaresult = await redis0.eval(B2BHistoryLuaOld, 1, '1_2', 0, 80, 1726217021);
     ctx.body = luaHostoryResultToJSON(luaresult)
 

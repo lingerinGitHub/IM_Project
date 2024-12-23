@@ -5,23 +5,25 @@ import { useSocket_api_store } from '../stores/socket.ts';
 import { usechatInfoStore } from '../stores/chatInfoStore.ts';
 import { Logger } from 'tslog';
 import { serverpath } from '../config/serverPath.ts';
+
 // import { storeToRefs } from 'pinia'
 const logger = new Logger({ name: 'login_api' })
 // 使用token登录，必须同时具有cookie，token
 
 //常规的账号密码登录,data是放在body里面的
 async function login_api(type: string, data: object): Promise<object> {
+
     const socket_api_store = useSocket_api_store()
     if (socket_api_store.socketID != undefined) {
         return {
             status: 0,
-            data: '请勿重复登录!'
+            data: '请重复登录!'
         }
     }
     const logger = new Logger({ name: 'login_api' })
     const loginUserInfoStore = useloginUserInfoStore()
 
-    const resbody = await axiosPost(type, `http://${serverpath}/login`, data)
+    const resbody = await axiosPost(type, `${serverpath}/users/login`, data)
     //处理登录逻辑
     logger.info(resbody)
     if (resbody.status == 200) {
@@ -60,7 +62,7 @@ async function login_api(type: string, data: object): Promise<object> {
 
 
 async function tokenLogin_api(token: string): Promise<boolean> {
-    const resbody = await axiosPost('json', `http://${serverpath}/tokenSessionLogin`, { token: token })
+    const resbody = await axiosPost('json', `${serverpath}/users/tokenSessionLogin`, { token: token })
     const socket_api_store = useSocket_api_store()
     const loginUserInfoStore = useloginUserInfoStore()
 
@@ -104,7 +106,7 @@ async function tokenLogin_api(token: string): Promise<boolean> {
 }
 
 async function getFriendList(data: object) {
-    const friendList = await axiosPost('json', `http://${serverpath}/getFriendList`, data)
+    const friendList = await axiosPost('json', `${serverpath}/users/getFriendList`, data)
     logger.info(friendList.data.friendList)
     return friendList;
 }

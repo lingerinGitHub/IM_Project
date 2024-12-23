@@ -1,21 +1,18 @@
 <template>
     <div class="nav-container">
         <ul class="menu-list">
-            <li v-for="(item, index) in iconfontList" @click="selectFunction(index)" :key="index">
-                <span class="block"></span>
-                <span class="iconfont">
-                    <el-icon class='icon' :style="{
-                        backgroundColor: item.isSelected ? '#1f87e7' : '#323540',
-                        color: item.isSelected ? '#1f87e7' : '#727885'
-                    }" size="1.5rem">
-                        <component :is="item" />
+            <li v-for="(item, index) in iconfontList" class="flex flex-row"
+                @click="selectFunction(index)" :key="index">
+                <!-- <div class="block" :key="index"></div> -->
+                <div class="iconfont">
+                    <el-icon class='' size="1.5rem">
+                        <component class="icon" :is="item" />
                     </el-icon>
-                </span>
+                </div>
             </li>
             <div class="userInfo">
                 <div class="dot"></div>
                 <div class="userImg">
-                    <!-- 用户头像 -->
                     <el-image style="width: 100%; height: 100%" :src="props.photoUrl" fit="cover" />
                 </div>
             </div>
@@ -49,14 +46,13 @@ function selectFunction(index: number) {
 
     if (currendAction == index) {
         return
-    } else if(index < 2) {
+    } else if (index < 2) {
         currendAction = index
     } else {
         notificationEmits(notificationType.warning, '警告', '该功能正在开发中')
         return
     }
     var icons: any = document.querySelectorAll('.icon');
-    var blocks: any = document.querySelectorAll('.block');
 
     console.log(`选择了${index}`)
 
@@ -71,7 +67,7 @@ function selectFunction(index: number) {
             console.log('跳转至/friendActionPanel')
             break;
         default:
-            
+
             break;
     }
 
@@ -79,17 +75,20 @@ function selectFunction(index: number) {
 
     // 重置所有图标的颜色和块的背景色  
     icons.forEach((icon: any, i: number) => {
-        icon.style.color = '#727885';
-        if (blocks[i]) { // 确保 blocks[i] 存在  
-            blocks[i].style.backgroundColor = '#323540';
+        icon.style.color = '#8d8f97';
+        if(i == index){
+            icon.style.color = '#1f87e7';
         }
+        // icon.styel.hover = "#fff"
     });
 
+    
+
     // 更改特定索引的图标颜色和块背景色  
-    if (index < icons.length && index < blocks.length) {
-        icons[index].style.color = '#1f87e7';
-        blocks[index].style.backgroundColor = '#1f87e7';
-    }
+    // if (index < icons.length && index < blocks.length) {
+    //     icons[index].style.color = '#1f87e7';
+    //     blocks[index].style.backgroundColor = '#1f87e7';
+    // }
 }
 
 enum notificationType {
@@ -135,7 +134,9 @@ onMounted(() => {
     align-items: center;
     height: 100%;
     width: 100%;
-    // background-color: #fff;
+    background-color: antiquewhite;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
     // border-radius: 15px;
 
     .menu-list {
@@ -156,17 +157,6 @@ onMounted(() => {
             width: 100%;
             height: 10%;
 
-
-            &:hover {
-                .icon {
-                    color: #1f87e7;
-                }
-
-                .block {
-                    background-color: #1f87e7;
-                }
-            }
-
             .block {
                 // display: inline-block;
                 // flex-shrink: 1;
@@ -181,6 +171,16 @@ onMounted(() => {
                 align-items: center;
                 flex-grow: 20;
                 flex-grow: 1;
+
+                // &:hover {
+                    .icon:hover {
+                        color: #1f87e7;
+                    }
+
+                    .block:hover {
+                        background-color: #1f87e7;
+                    }
+                // }
             }
         }
 

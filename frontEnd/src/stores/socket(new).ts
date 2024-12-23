@@ -6,16 +6,16 @@ import { getTimestamp } from '../utils/time.ts';
 import { chatInfo, Role } from '../class/chatInfoClass.ts';
 import { logout } from '../api/login_api.ts';
 import router from '../router/index.ts';
-import { serverpath } from '../config/serverPath.ts';
+import { socketiopath } from '../config/serverPath.ts';
 
 
 export const useSocket_api_store = defineStore('useSocket_api_store', {
     state: () => {
         return {
-            socketID: undefined as unknown as string,
+            socketID: '0' as string,
             status: 'disconnected' as unknown as string,
             reconnect: false,
-            io: null as any,  // 使用正确的类型
+            io: null as any,  // 保存socketio实例
             offsetNum: 0 as number,
             message: undefined as unknown as string,
             //store
@@ -28,24 +28,17 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
         //连接后开始使用基础的监听路由
         wsConnection(id: Number, token: string) {
 
-            // 已经连接，无需升级请求
-            if (this.socketID != undefined) {
+            // 已经连接或者为登录，不允许升级请求
+            if (this.socketID != '0' || this.loginUserInfoStore.id == undefined) {
+                console.log('this.socketID'+this.socketID)
+                console.log('this.loginUserInfoStore.id'+this.loginUserInfoStore.id)
                 return;
 
             };
 
 
-            // this.io = socket(`${serverpath}`, {
-            //     reconnectionDelay: 10000,
-            //     query: {
-            //         id: id,
-            //         token: token, //获取loginUserStore中token
-            //     },
-            //     reconnection: true //断线重连
-            // });
-
             // socketio连接配置
-            this.io = socket(`${serverpath}`, {
+            this.io = socket(`${socketiopath}`, {
                 
                 query: {
                     id: id,
@@ -57,7 +50,6 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
                 reconnectionDelayMax: 50000, // 最大重连间隔时间
             });
 
-            
             // B2B接收消息
             this.io.on("B2Bmessage:from", (data: any) => {
                 // receive(data)
@@ -72,6 +64,7 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
                 //延长token有效期;
                 localStorage.setItem('token', data);
             })
+
             //链接成功后服务器返回链接信息
             this.io.on("connected", (msg: any) => {
 
@@ -80,7 +73,6 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
                 this.status = 'connected';
 
                 this.loginUserInfoStore.wsConnectTimeStamp = msg.data.timeStamp;
-
             });
 
 
@@ -88,7 +80,9 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
             this.io.on("historyMessage", (chatInfoList: any) => {
                 chatInfoList = JSON.parse(chatInfoList)
                 if (chatInfoList.id != this.loginUserInfoStore.id) {
-                    
+                    // logger.debug(Object.keys(chatInfoList))
+                    // logger.debug(this.loginUserInfoStore.id)
+
                     return
                 }
                 this.chatInfoStore.HistoryChatInfoInsert(chatInfoList.friendId, chatInfoList.data, chatInfoList.ifMore)
@@ -97,13 +91,43 @@ export const useSocket_api_store = defineStore('useSocket_api_store', {
             this.io.on("logout", async () => {
                 //断开之前先刷新时间戳
                 this.io.disconnect()
+                this.socketID = '0';
+                this.status = 'disConnected';
                 logout()
                 router.go(0)
                 router.push({ path: '/login' })
             })
+
+            // this.io.on('reConnection', (data: any) => {
+            //     console.log(data)
+            //     console.log('接收到重新连接指令')
+            //     this.socketID = '0';
+            //     this.status = 'disConnected';
+            //     this.reConnect()
+            // })
+
+            // this.io.on('disconnect', (reason: any) => {
+            //     console.log('连接已经断开，原因：' + reason);
+            //     // 尝试重新连接
+            //     this.reConnect()
+            // });
         },
 
+        // async reConnect() {
+        //     console.log('socket即将重新连接')
+        //     this.socketID = '0';
+        //     this.status = 'disConnected';
+        //     // 重新进行socket连接
+        //     this.wsConnection(this.loginUserInfoStore.id, this.loginUserInfoStore.token)
+        // },
+
         async B2Bmessageto(toId: number, message: string) {
+
+            console.log(this.status)
+
+            if (this.socketID == '0' || this.status == 'disConnected') {
+                this.wsConnection(this.loginUserInfoStore.id, this.loginUserInfoStore.token)
+            }
 
             // B2B发送消息
             this.io.emit("B2Bmessage:to", {

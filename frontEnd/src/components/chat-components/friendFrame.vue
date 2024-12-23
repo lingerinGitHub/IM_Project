@@ -16,17 +16,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+// import { ref } from 'vue';
 
 var props = defineProps(['photoUrl', 'name', 'from', 'id']); //父传子数组|对象写法都可以
 
-const visible = ref(false)
+// const visible = ref(false)
 
 
-function test(){
-    console.log('我被触发了')
-    // visible.value = true
-}
+// function test(){
+//     console.log('我被触发了')
+//     // visible.value = true
+// }
 </script>
 
 <style lang="scss">

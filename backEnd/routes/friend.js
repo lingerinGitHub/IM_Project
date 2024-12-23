@@ -1,7 +1,7 @@
 const router = require('koa-router')()
 const { verifyTokenId, generateToken } = require('../utils/jwt_util.js')
 const knex = require('../config/knex_config.js');
-router.prefix('/friend')
+router.prefix('/users/friends')
 
 //需要提前检测cookieid与查询用户id是否一致
 router.post('/search', async function (ctx) {
@@ -28,7 +28,7 @@ router.post('/search', async function (ctx) {
                 throw error
             })
 
-        console.log(searchresult)
+        // console.log(searchresult)
 
         ctx.body= {data:searchresult, status:200}
         ctx.status = 200
@@ -46,7 +46,7 @@ router.post('/add', async function (ctx, next) {
 
     console.log('添加好友')
 
-    console.log(ctx.request.body?.data)
+    // console.log(ctx.request.body?.data)
     const data = ctx.request.body?.data
     if (data == undefined) {
         ctx.status = 502
@@ -93,9 +93,9 @@ router.post('/add', async function (ctx, next) {
                     [{ user_id: data.userid, friend_id: data.friendid, status: 'accepted' },
                     { user_id: data.friendid, friend_id: data.userid, status: 'pending' }]
                 )
-            console.log('好友添加成功')
+            // console.log('好友添加成功')
         } catch {
-            console.log('好友id并不在users中')
+            // console.log('好友id并不在users中')
             ctx.body = JSON.stringify({ data: 'error', status: 502 })
             ctx.status = 502
             return
@@ -115,12 +115,12 @@ router.post('/add', async function (ctx, next) {
 
 router.post('/status', async function (ctx) {
 
-    console.log('获取好友状态列表')
+    // console.log('获取好友状态列表')
 
-    console.log(ctx.request.body?.data)
+    // console.log(ctx.request.body?.data)
     const data = ctx.request.body?.data
     if (data == undefined) {
-        console.log('data为空')
+        // console.log('data为空')
         ctx.status = 502
         return
     }
@@ -171,7 +171,7 @@ router.post('/statusUpdate', async function (ctx) {
 
     console.log('更改好友关系')
 
-    console.log(ctx.request.body?.data)
+    // console.log(ctx.request.body?.data)
     const data = ctx.request.body?.data
 
     if (data == undefined || data.friendid == undefined || data.userid == undefined || !['accepted', 'rejected', 'deleted'].includes(data.status)

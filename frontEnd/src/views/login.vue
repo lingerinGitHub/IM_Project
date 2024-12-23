@@ -54,7 +54,7 @@
         </div>
     </div>
     <div class="image-container">
-        <el-image style="width: 120%; height: 120%; margin: 5,5,5,5%;" :src="url" fit="cover" />
+        <el-image style="width: 110%; height: 110%; margin: 5,5,5,5%;" :src="url" fit="cover" />
     </div>
     <el-dialog v-model="dialogVisible" title="" width="340" :show-close="false" top="33vh">
         <div class="container" id="container">
@@ -65,6 +65,10 @@
 
         </template>
     </el-dialog>
+    <div class="footer">
+        <p>版权所有 © 2024 格林世界</p>
+        <p><a href="https://beian.miit.gov.cn" style="margin-left: 0;" target="_blank">粤ICP备2024330904号</a></p>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -75,10 +79,12 @@ import { useRouter } from 'vue-router';
 import jigsaw from '../utils/jigsaw.js';
 import { isValidUsername, isValidEmail, isValidPassword } from '../utils/stringVerify.ts'
 import { register_api } from '../api/register_api.ts'
+import { wallpaperUrl } from '../config/serverPath.ts'
 
+console.log('壁纸路径'+wallpaperUrl)
 const router = useRouter()//路由实例化
-const photourl = ref('../../public/壁纸_compressed.JPG');
-const url = ref('../../public/壁纸_compressed.JPG');
+const photourl = ref(wallpaperUrl);
+const url = ref(wallpaperUrl);
 
 const regUsername = ref<string>('')
 const regEmail = ref<string>('')
@@ -86,9 +92,9 @@ const regPassword = ref<string>('')
 const dialogVisible = ref<boolean>(false)
 
 interface registerData {
-    username:string,
-    password:string,
-    email:string
+    username: string,
+    password: string,
+    email: string
 }
 
 interface userinfo {
@@ -109,6 +115,7 @@ async function login(username: string, password: string) {
             email: username,
             password: password
         }
+
         const result: any = await login_api('json', userinfo) || null;
         switch (result.status) {
             case 200:
@@ -145,10 +152,13 @@ async function login(username: string, password: string) {
             case 0:
                 ElNotification({
                     title: 'Error',
-                    message: `请勿重复登陆, 牢弟！`,
+                    message: `出现错误,请重新登录,即将刷新页面！`,
                     type: 'error',
                     duration: 2500,
                     offset: 50,
+                    onClose: () => {
+                        router.go(0)
+                    },
                 });
                 break;
             default:
@@ -184,19 +194,20 @@ const openFullScreen2 = () => {
 
 const radio1 = ref<number>(0)
 
+
 async function register() {
     const nameResult = isValidUsername(regUsername.value)
     const emailResult = isValidEmail(regEmail.value)
     const passwordResult = isValidPassword(regPassword.value)
 
     if (!nameResult.result) {
-        notificationEmits(notificationType.warning, '警告',nameResult.message)
+        notificationEmits(notificationType.warning, '警告', nameResult.message)
     } else if (!emailResult.result) {
-        notificationEmits(notificationType.warning, '警告',emailResult.message)
+        notificationEmits(notificationType.warning, '警告', emailResult.message)
     } else if (!passwordResult.result) {
-        notificationEmits(notificationType.warning, '警告',passwordResult.message)
+        notificationEmits(notificationType.warning, '警告', passwordResult.message)
     } else if (radio1.value == 0) {
-        notificationEmits(notificationType.warning, '警告','牢弟,你需要阅读并同意相关条款')
+        notificationEmits(notificationType.warning, '警告', '牢弟,你需要阅读并同意相关条款')
     } else {
         // 登录在图片验证码内
         picVerify()
@@ -235,24 +246,24 @@ async function picVerify() {
     }
 }
 
-async function verifySuccess(loading:any) {
+async function verifySuccess(loading: any) {
     //调用接口发起请求
-    const registerData:registerData = {
+    const registerData: registerData = {
         username: regUsername.value,
         password: regPassword.value,
         email: regEmail.value
     }
-    const response:any = await register_api(registerData)
-    if(response.status != 200){
+    const response: any = await register_api(registerData)
+    if (response.status != 200) {
         loading.close();
-        notificationEmits(notificationType.error,'错误','该邮箱已注册')
+        notificationEmits(notificationType.error, '错误', '该邮箱已注册')
     } else {
         loading.close();
         regUsername.value = '';
         regPassword.value = '';
         regEmail.value = '';
         radio1.value = 0;
-        notificationEmits(notificationType.success,'成功了','快去登录吧!')
+        notificationEmits(notificationType.success, '成功了', '快去登录吧!')
         spin() //翻转回去登录面
     }
 
@@ -264,7 +275,7 @@ enum notificationType {
     info = 'info',
     error = 'error'
 }
-function notificationEmits(type:notificationType, title:string, message:string){
+function notificationEmits(type: notificationType, title: string, message: string) {
     ElNotification({
         title: title,
         message: message,
@@ -279,6 +290,7 @@ function spin() {
 
     var container: any = document.querySelector('.view-container')
     if (ifSpan == false) {
+        alert('请回头,暂时无法支持注册')
         container.classList.add('spin')
         ifSpan = true;
         return
@@ -527,6 +539,18 @@ function spin() {
 
 .spin {
     transform: rotate3d(0, 1, 0, 180deg);
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    // margin: 0 auto;
+    z-index: 999;
+    height: auto;
+    width: 100%;
+    background-color: transparent;
+    margin-left: 0;
 }
 </style>
 

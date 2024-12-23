@@ -7,7 +7,7 @@ const router = require('koa-router')()
 
 //使用组件knex链式调用使用mysql
 
-router.post('/register', async (ctx, next) => {
+router.post('/users/register', async (ctx, next) => {
 
     const regUsername = ctx.request.body?.data?.username;
     const regEmail = ctx.request.body?.data?.email;
@@ -17,7 +17,7 @@ router.post('/register', async (ctx, next) => {
     console.log(regEmail)
     console.log(regPassword)
     //判断请求体是否合法
-    if (regUsername === undefined && regEmail === undefined && regPassword === undefined) {
+    if (regUsername === undefined || regEmail === undefined || regPassword === undefined) {
         console.log('为空')
         ctx.status = 502
         return

@@ -8,7 +8,7 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 // const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-const testRouter = require('./routes/testRouter')
+// const testRouter = require('./routes/testRouter')
 const friend = require('./routes/friend')
 const resource = require('./routes/resource')
 const crosConfig = require('./config/crosConfig.js')
@@ -25,16 +25,19 @@ const { error } = require('console');
 const static = require('koa-static');
 const path = require('path');
 const register = require('./routes/register.js')
+const { loggerMiddleware } = require("./log/log")
 
 //socjet.io跨域配置
 const corsOptions = {
+  // origin: ["https://www.greenworld.icu"],
   origin: ["http://localhost:5173"],
   // credentials: true
 };
 //socket.io
 const io = new Server(httpServer, {
-  // path: '/ws',
-  pingTimeout: 30000,
+  // path: 'socket.io`,
+  pingInterval: 10000, // 心跳间隔 10 秒
+  pingTimeout: 5000, // 超时时间 5 秒
   cors: corsOptions
 });
 // ----- app.js -----
@@ -42,7 +45,7 @@ const io = new Server(httpServer, {
 // Note it's app.ws.use and not app.use
 
 // 静态文件根目录
-const staticPath = './public';
+const staticPath = path.join('/public');
 
 
 //首先处理跨域请求
@@ -81,17 +84,20 @@ app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
+app.use(loggerMiddleware)
+
 app.use(views(__dirname + '/views', {
   extension: 'ejs'
 }))
 
 // logger记录日志
-app.use(async (ctx, next) => {
-  const start = new Date()
-  await next()
-  const ms = new Date() - start
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
-})
+// app.use(async (ctx, next) => {
+//   // console.log(ctx.request.body.data)
+//   const start = new Date()
+//   await next()
+//   const ms = new Date() - start
+//   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+// })
 
 //验证sessionid，token的中间件放这里，如果验证不通过，则返回错误信息,对某些接口放行
 
@@ -108,14 +114,24 @@ app.use(async (ctx, next) => {
 // 以下路由需要验证身份
 // 路由中间件
 // app.use(koajwt({ secret: 'secretkey' }).unless({ path: [ '/token','/static', '/getHistory','/login', '/test', '/get', '/koa', '/', '/ws','/sessionTest', '/getFriendList'] }));
-app.use(login.routes(), login.allowedMethods())
+
 app.use(resource.routes(), resource.allowedMethods())
-app.use(testRouter.routes(), testRouter.allowedMethods())
+// app.use(testRouter.routes(), testRouter.allowedMethods())
+
+
+app.use(login.routes(), login.allowedMethods())
 app.use(register.routes(), register.allowedMethods())
+
 //接下来的路由检查cookie是否含有内容
-app.use(async (ctx,next)=>{
+app.use(async (ctx, next) => {
   console.log('中间件:检测cookie内容')
   console.log(ctx.session.id)
+
+  if(ctx.session.id === undefined) {
+    ctx.status = 404;
+    return
+  }
+  // next也需要异步等待
   await next()
 })
 

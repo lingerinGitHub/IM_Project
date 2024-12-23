@@ -77,7 +77,7 @@ export const useloginUserInfoStore = defineStore('useloginUserInfoStore', {
             this.name = name;
         },
         setPhoto(photo: string) {
-            this.photo = (`http://${serverpath}/static?name=${photo}`);
+            this.photo = (`${serverpath}/static?name=${photo}`);
         },
         setProvince(province: string) {
             this.province = province;

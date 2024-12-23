@@ -12,7 +12,7 @@
                         <div class="userImg">
                             <!-- 用户头像 -->
                             <el-image style="width: 100%; height: 100%"
-                                :src="`http://${serverpath}/static?name=` + item.photo" fit="cover" />
+                                :src="`${serverpath}/static?name=` + item.photo" fit="cover" />
                         </div>
                     </div>
                     <div class="info">

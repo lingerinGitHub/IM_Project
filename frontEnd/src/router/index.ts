@@ -9,12 +9,18 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            path:'/codeTest',
+            name:'codeTest',
+            component: ()=>import('../views/codeTest.vue')
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('../views/login.vue'),
             beforeEnter: () => {
                 console.log('清除登录记录')
                 logout()
+                // router.go(0) // 强制刷新页面
             }
         },
         {
@@ -60,6 +66,11 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
     console.log(from.path)
     console.log(to.path)
+
+    //测试
+    if(to.path == '/codeTest') {
+        return
+    }
 
     if (to.path == '/') {
         // 自动登录

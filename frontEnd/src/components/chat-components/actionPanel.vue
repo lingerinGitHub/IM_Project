@@ -31,7 +31,7 @@
                         <!-- 好友列表s -->
                         <div v-for="(item, index) in userList" :key="index" @click="addFriend(item.id)">
                             <friendFrame :name="item.username" :from="item.province + item.city"
-                                :photoUrl="item.photo == '0' ? `http://${serverpath}/static?name=` + item.photo : `http://${serverpath}/static?name=1.jpg`"
+                                :photoUrl="item.photo == '0' ? `${serverpath}/static?name=` + item.photo : `${serverpath}/static?name=1.jpg`"
                                 :id="item.id">
 
                             </friendFrame>

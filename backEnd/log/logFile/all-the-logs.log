@@ -1,0 +1,8 @@
+[2024-12-22T22:45:43.992] [INFO] default - POST 200 /users/tokenSessionLogin 请求参数： {"data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxfSwiaWF0IjoxNzM0ODc4MjM3LCJleHAiOjE3MzU0ODMwMzd9.rEIbIHsyH6tf2vy3HdZaEPv2f76qlpt9q0pYQxohYAA"}} 响应参数： staticResource - 0.0.0.0 - 53ms
+[2024-12-22T22:45:44.042] [INFO] default - POST 200 /users/getFriendList 请求参数： {"data":{"id":1,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxfSwiaWF0IjoxNzM0ODc4NzQzLCJleHAiOjE3MzU0ODM1NDN9.XITc8Wy4tke6Q1ayEC_g4UbWG7IDwRf-iURl4qSzH4o"}} 响应参数： staticResource - 0.0.0.0 - 17ms
+[2024-12-22T22:45:44.463] [INFO] default - GET 200 /static?name=1.jpg 请求参数： {} 响应参数： staticResource - 0.0.0.0 - 3ms
+[2024-12-22T22:45:44.470] [INFO] default - GET 200 /static?name=2.jpg 请求参数： {} 响应参数： staticResource - 0.0.0.0 - 1ms
+[2024-12-22T22:58:37.839] [INFO] default - POST 200 /users/login 请求参数： {"data":{"email":"acct1","password":"123"}} 响应参数： staticResource - 0.0.0.0 - 80ms
+[2024-12-22T22:58:37.880] [INFO] default - POST 200 /users/getFriendList 请求参数： {"data":{"id":1}} 响应参数： staticResource - 0.0.0.0 - 8ms
+[2024-12-22T22:58:38.384] [INFO] default - GET 200 /static?name=1.jpg 请求参数： {} 响应参数： staticResource - 0.0.0.0 - 3ms
+[2024-12-22T22:58:38.387] [INFO] default - GET 200 /static?name=2.jpg 请求参数： {} 响应参数： staticResource - 0.0.0.0 - 1ms

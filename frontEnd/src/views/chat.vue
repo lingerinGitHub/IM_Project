@@ -12,7 +12,7 @@
                         <!-- 插槽的内容放这里 -->
                         <keep-alive>
                             <router-view name="actionPanel" :friendList="friendList"
-                                :friendStatusClassification="friendStatusClassification" :id="id" @test="test"></router-view>
+                                :friendStatusClassification="friendStatusClassification" :id="id"></router-view>
                         </keep-alive>
                     </template>
                 </ActionPanel>
@@ -41,10 +41,6 @@ const { friendList, email, photo, name, id } = storeToRefs(loginUserInfoStore)
 async function getFriendStatus() {
     var friendStatusClassification = await friendStatusStore.getFriendStatus(id.value)
     console.log(friendStatusClassification)
-}
-
-function test(){
-    console.log(' sfgag')
 }
 </script>
 
